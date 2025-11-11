@@ -1,0 +1,3931 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tonny Lays | Construction Attendance Pro</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.28/jspdf.plugin.autotable.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&family=Montserrat:wght@700;800;900&display=swap"
+        rel="stylesheet">
+    <style>
+        :root {
+            --primary: #2E8B57;
+            --primary-dark: #256F47;
+            --secondary: #FF6B35;
+            --accent: #00A8E8;
+            --success: #4CD964;
+            --warning: #FF9500;
+            --danger: #FF3B30;
+            --dark-bg: #121826;
+            --dark-card: #1E293B;
+            --dark-border: #334155;
+            --text-primary: #F8FAFC;
+            --text-secondary: #CBD5E1;
+            --text-muted: #94A3B8;
+            --gradient-primary: linear-gradient(135deg, #2E8B57 0%, #00A8E8 100%);
+            --gradient-secondary: linear-gradient(135deg, #FF6B35 0%, #FF9500 100%);
+            --shadow: 0 10px 25px rgba(0, 0, 0, 0.3);
+            --shadow-lg: 0 20px 40px rgba(0, 0, 0, 0.4);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        body {
+            font-family: 'Poppins', sans-serif;
+            background: var(--dark-bg);
+            color: var(--text-primary);
+            line-height: 1.6;
+            overflow-x: hidden;
+        }
+
+        .app-container {
+            min-height: 100vh;
+            padding-bottom: 2rem;
+            width: 100%;
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        /* Header */
+        .app-header {
+            background: var(--dark-card);
+            padding: 1.5rem 1rem;
+            box-shadow: var(--shadow);
+            border-bottom: 1px solid var(--dark-border);
+            width: 100%;
+        }
+
+        .header-content {
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        @media (min-width: 768px) {
+            .header-content {
+                flex-direction: row;
+                justify-content: space-between;
+                align-items: center;
+            }
+
+            .app-header {
+                padding: 1.5rem 2rem;
+            }
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .logo-icon {
+            background: var(--gradient-primary);
+            width: 40px;
+            height: 40px;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.2rem;
+        }
+
+        .logo-text {
+            font-family: 'Montserrat', sans-serif;
+            font-weight: 800;
+            font-size: 1.4rem;
+            background: linear-gradient(to right, #2E8B57, #00A8E8);
+            -webkit-background-clip: text;
+            background-clip: text;
+            -webkit-text-fill-color: transparent;
+            color: transparent;
+        }
+
+        .company-name {
+            font-size: 0.9rem;
+            color: var(--text-muted);
+            margin-top: -5px;
+        }
+
+        .header-controls {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.8rem;
+            align-items: center;
+        }
+
+        .sync-status {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            font-size: 0.8rem;
+            color: var(--text-muted);
+        }
+
+        .sync-status.syncing {
+            color: var(--accent);
+        }
+
+        .sync-status.synced {
+            color: var(--success);
+        }
+
+        .sync-status.error {
+            color: var(--danger);
+        }
+
+        .period-selector,
+        .site-selector {
+            background: var(--dark-card);
+            border: 1px solid var(--dark-border);
+            border-radius: 12px;
+            padding: 0.7rem 1rem;
+            color: var(--text-primary);
+            font-family: 'Poppins', sans-serif;
+            min-width: 150px;
+            width: 100%;
+        }
+
+        @media (min-width: 480px) {
+
+            .period-selector,
+            .site-selector {
+                width: auto;
+            }
+        }
+
+        .passkey-display {
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 8px;
+            padding: 0.5rem 1rem;
+            font-size: 0.85rem;
+            color: var(--text-muted);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            width: 100%;
+        }
+
+        @media (min-width: 480px) {
+            .passkey-display {
+                width: auto;
+            }
+        }
+
+        /* Stats */
+        .stats-section {
+            padding: 1.5rem 1rem;
+            max-width: 1400px;
+            margin: 0 auto;
+            width: 100%;
+        }
+
+        @media (min-width: 768px) {
+            .stats-section {
+                padding: 1.5rem 2rem;
+            }
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1.5rem;
+        }
+
+        .stat-card {
+            background: var(--dark-card);
+            border-radius: 16px;
+            padding: 1.5rem;
+            box-shadow: var(--shadow);
+            border: 1px solid var(--dark-border);
+            transition: transform 0.3s ease;
+        }
+
+        .stat-card:hover {
+            transform: translateY(-5px);
+        }
+
+        .stat-icon {
+            width: 50px;
+            height: 50px;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+            margin-bottom: 1rem;
+        }
+
+        .stat-1 .stat-icon {
+            background: linear-gradient(135deg, #2E8B57, #00A8E8);
+        }
+
+        .stat-2 .stat-icon {
+            background: linear-gradient(135deg, #FF6B35, #FF9500);
+        }
+
+        .stat-3 .stat-icon {
+            background: linear-gradient(135deg, #4CD964, #00A8E8);
+        }
+
+        .stat-4 .stat-icon {
+            background: linear-gradient(135deg, #FF9500, #FF6B35);
+        }
+
+        .stat-value {
+            font-size: 2rem;
+            font-weight: 700;
+            margin-bottom: 0.5rem;
+            font-family: 'Montserrat', sans-serif;
+        }
+
+        .stat-label {
+            color: var(--text-muted);
+            font-size: 0.9rem;
+        }
+
+        /* Filters Section */
+        .filters-section {
+            padding: 1rem 1rem;
+            max-width: 1400px;
+            margin: 0 auto;
+            width: 100%;
+        }
+
+        @media (min-width: 768px) {
+            .filters-section {
+                padding: 1rem 2rem;
+            }
+        }
+
+        .filters-grid {
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+        }
+
+        @media (min-width: 768px) {
+            .filters-grid {
+                flex-direction: row;
+                align-items: center;
+            }
+        }
+
+        .filter-group {
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+        }
+
+        .filter-label {
+            font-size: 0.85rem;
+            color: var(--text-muted);
+            font-weight: 500;
+        }
+
+        .filter-select {
+            background: var(--dark-card);
+            border: 1px solid var(--dark-border);
+            border-radius: 10px;
+            padding: 0.6rem 1rem;
+            color: var(--text-primary);
+            font-family: 'Poppins', sans-serif;
+            min-width: 150px;
+            width: 100%;
+        }
+
+        @media (min-width: 480px) {
+            .filter-select {
+                width: auto;
+            }
+        }
+
+        .filter-select option {
+            background: var(--dark-card);
+            color: var(--text-primary);
+        }
+
+        .active-filters {
+            display: flex;
+            gap: 0.5rem;
+            flex-wrap: wrap;
+            margin-top: 0.5rem;
+        }
+
+        @media (min-width: 768px) {
+            .active-filters {
+                margin-top: 0;
+                margin-left: auto;
+            }
+        }
+
+        .filter-chip {
+            background: var(--primary);
+            color: white;
+            padding: 0.4rem 0.8rem;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .filter-chip .remove {
+            cursor: pointer;
+            opacity: 0.8;
+        }
+
+        .filter-chip .remove:hover {
+            opacity: 1;
+        }
+
+        /* Controls */
+        .controls-section {
+            padding: 0 1rem 1.5rem;
+            max-width: 1400px;
+            margin: 0 auto;
+            width: 100%;
+        }
+
+        @media (min-width: 768px) {
+            .controls-section {
+                padding: 0 2rem 1.5rem;
+            }
+        }
+
+        .controls-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1rem;
+        }
+
+        @media (min-width: 768px) {
+            .controls-grid {
+                display: flex;
+                flex-wrap: wrap;
+            }
+        }
+
+        .control-btn {
+            background: var(--dark-card);
+            border: 1px solid var(--dark-border);
+            border-radius: 12px;
+            padding: 0.8rem 1rem;
+            color: var(--text-primary);
+            font-family: 'Poppins', sans-serif;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            transition: all 0.3s ease;
+            text-align: center;
+        }
+
+        .control-btn:hover {
+            background: rgba(255, 255, 255, 0.05);
+            transform: translateY(-2px);
+        }
+
+        .control-btn.primary {
+            background: var(--primary);
+            border-color: var(--primary);
+        }
+
+        .control-btn.success {
+            background: var(--success);
+            border-color: var(--success);
+        }
+
+        .control-btn.danger {
+            background: var(--danger);
+            border-color: var(--danger);
+        }
+
+        .control-btn.cloud {
+            background: var(--accent);
+            border-color: var(--accent);
+        }
+
+        /* Main Content */
+        .main-content {
+            padding: 0 1rem;
+            max-width: 1400px;
+            margin: 0 auto;
+            width: 100%;
+        }
+
+        @media (min-width: 768px) {
+            .main-content {
+                padding: 0 2rem;
+            }
+        }
+
+        .content-header {
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+            margin-bottom: 1.5rem;
+        }
+
+        @media (min-width: 768px) {
+            .content-header {
+                flex-direction: row;
+                justify-content: space-between;
+                align-items: center;
+            }
+        }
+
+        .section-title {
+            font-family: 'Montserrat', sans-serif;
+            font-size: 1.5rem;
+            font-weight: 700;
+        }
+
+        .search-box {
+            background: var(--dark-card);
+            border: 1px solid var(--dark-border);
+            border-radius: 12px;
+            padding: 0.8rem 1rem;
+            color: var(--text-primary);
+            font-family: 'Poppins', sans-serif;
+            width: 100%;
+        }
+
+        @media (min-width: 768px) {
+            .search-box {
+                width: 300px;
+            }
+        }
+
+        /* Employee Grid */
+        .employee-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+            gap: 1.5rem;
+            width: 100%;
+        }
+
+        @media (max-width: 480px) {
+            .employee-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .employee-card {
+            background: var(--dark-card);
+            border-radius: 16px;
+            padding: 1.5rem;
+            box-shadow: var(--shadow);
+            border: 1px solid var(--dark-border);
+            position: relative;
+            transition: all 0.3s ease;
+            cursor: pointer;
+            width: 100%;
+            overflow: hidden;
+        }
+
+        .employee-card:hover {
+            transform: translateY(-5px);
+            box-shadow: var(--shadow-lg);
+        }
+
+        .employee-card.expanded {
+            grid-column: 1 / -1;
+        }
+
+        .employee-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 5px;
+            height: 100%;
+            background: var(--gradient-primary);
+        }
+
+        .card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 1.5rem;
+        }
+
+        .employee-info h3 {
+            font-size: 1.2rem;
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .days-badge {
+            background: var(--gradient-secondary);
+            color: white;
+            font-size: 0.8rem;
+            padding: 0.2rem 0.6rem;
+            border-radius: 20px;
+            font-weight: 600;
+        }
+
+        .employee-meta {
+            display: flex;
+            flex-direction: column;
+            gap: 0.3rem;
+        }
+
+        .employee-role {
+            color: var(--text-secondary);
+            font-size: 0.9rem;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .employee-rate {
+            color: var(--accent);
+            font-weight: 600;
+            font-size: 0.9rem;
+        }
+
+        .employee-actions {
+            display: flex;
+            gap: 0.5rem;
+        }
+
+        .action-btn {
+            width: 36px;
+            height: 36px;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: rgba(255, 255, 255, 0.08);
+            border: 1px solid var(--dark-border);
+            color: var(--text-primary);
+            cursor: pointer;
+            transition: all 0.3s ease;
+            background-clip: padding-box;
+        }
+
+        .action-btn:hover {
+            background: var(--primary);
+            transform: scale(1.1);
+        }
+
+        .action-btn.delete {
+            background: rgba(255, 59, 48, 0.2);
+            border-color: var(--danger);
+            color: var(--danger);
+        }
+
+        .action-btn.delete:hover {
+            background: var(--danger);
+            color: white;
+        }
+
+        .action-btn.duplicate {
+            background: rgba(0, 168, 232, 0.2);
+            border-color: var(--accent);
+            color: var(--accent);
+        }
+
+        .action-btn.duplicate:hover {
+            background: var(--accent);
+            color: white;
+        }
+
+        /* Attendance Matrix */
+        .attendance-section {
+            margin-top: 1.5rem;
+        }
+
+        .section-label {
+            font-size: 0.9rem;
+            color: var(--text-muted);
+            margin-bottom: 0.8rem;
+            display: block;
+        }
+
+        .attendance-matrix {
+            display: grid;
+            grid-template-columns: repeat(7, 1fr);
+            gap: 0.5rem;
+            width: 100%;
+        }
+
+        .day-cell {
+            aspect-ratio: 1;
+            border-radius: 10px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.7rem;
+            font-weight: 600;
+            cursor: pointer;
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid var(--dark-border);
+            transition: all 0.3s ease;
+            position: relative;
+            min-width: 32px;
+            padding: 2px;
+        }
+
+        .day-cell.present {
+            background: rgba(76, 217, 100, 0.2);
+            border-color: var(--success);
+            color: var(--success);
+        }
+
+        .day-cell.absent {
+            background: rgba(255, 59, 48, 0.2);
+            border-color: var(--danger);
+            color: var(--danger);
+        }
+
+        .day-cell.weekend {
+            background: rgba(255, 149, 0, 0.1);
+            border-color: var(--warning);
+            color: var(--warning);
+        }
+
+        .day-cell.weekend.present {
+            background: rgba(76, 217, 100, 0.2);
+            border-color: var(--success);
+            color: var(--success);
+        }
+
+        .day-cell.weekend.absent {
+            background: rgba(255, 59, 48, 0.2);
+            border-color: var(--danger);
+            color: var(--danger);
+        }
+
+        .day-cell.future {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        .day-label {
+            font-size: 0.6rem;
+            color: var(--text-muted);
+            margin-bottom: 0.1rem;
+        }
+
+        .status-indicator {
+            width: 6px;
+            height: 6px;
+            border-radius: 50%;
+            margin-top: 1px;
+        }
+
+        .present .status-indicator {
+            background: var(--success);
+        }
+
+        .absent .status-indicator {
+            background: var(--danger);
+        }
+
+        .weekend:not(.present):not(.absent) .status-indicator {
+            background: var(--warning);
+        }
+
+        /* FAB */
+        .fab {
+            position: fixed;
+            bottom: 2rem;
+            right: 2rem;
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            background: var(--gradient-primary);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 1.5rem;
+            box-shadow: var(--shadow-lg);
+            cursor: pointer;
+            z-index: 100;
+            transition: all 0.3s ease;
+        }
+
+        .fab:hover {
+            transform: scale(1.1);
+        }
+
+        /* Modals */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.7);
+            z-index: 1000;
+            align-items: center;
+            justify-content: center;
+            padding: 1rem;
+        }
+
+        .modal-content {
+            background: var(--dark-card);
+            border-radius: 20px;
+            padding: 1.5rem;
+            max-width: 500px;
+            width: 100%;
+            max-height: 90vh;
+            overflow-y: auto;
+            box-shadow: var(--shadow-lg);
+            border: 1px solid var(--dark-border);
+            animation: modalSlideIn 0.3s ease;
+        }
+
+        @keyframes modalSlideIn {
+            from {
+                transform: translateY(-50px);
+                opacity: 0;
+            }
+
+            to {
+                transform: translateY(0);
+                opacity: 1;
+            }
+        }
+
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1.5rem;
+        }
+
+        .modal-title {
+            font-family: 'Montserrat', sans-serif;
+            font-size: 1.5rem;
+            font-weight: 700;
+        }
+
+        .close-modal {
+            background: none;
+            border: none;
+            color: var(--text-muted);
+            font-size: 1.5rem;
+            cursor: pointer;
+        }
+
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+
+        .form-label {
+            display: block;
+            margin-bottom: 0.5rem;
+            color: var(--text-secondary);
+            font-size: 0.9rem;
+            font-weight: 500;
+        }
+
+        .form-input {
+            width: 100%;
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid var(--dark-border);
+            border-radius: 12px;
+            padding: 0.9rem 1rem;
+            color: var(--text-primary);
+            font-family: 'Poppins', sans-serif;
+        }
+
+        .form-input:focus {
+            outline: none;
+            border-color: var(--accent);
+        }
+
+        .form-actions {
+            display: flex;
+            gap: 1rem;
+            margin-top: 2rem;
+            flex-direction: column;
+        }
+
+        @media (min-width: 480px) {
+            .form-actions {
+                flex-direction: row;
+            }
+        }
+
+        .btn {
+            flex: 1;
+            padding: 0.9rem 1.5rem;
+            border-radius: 12px;
+            font-family: 'Poppins', sans-serif;
+            font-weight: 500;
+            cursor: pointer;
+            border: none;
+            transition: all 0.3s ease;
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+        }
+
+        .btn-primary {
+            background: var(--primary);
+            color: white;
+        }
+
+        .btn-secondary {
+            background: rgba(255, 255, 255, 0.08);
+            color: var(--text-primary);
+            border: 1px solid var(--dark-border);
+        }
+
+        .btn-danger {
+            background: var(--danger);
+            color: white;
+        }
+
+        /* Toast */
+        .toast {
+            position: fixed;
+            top: 2rem;
+            right: 1rem;
+            left: 1rem;
+            background: var(--dark-card);
+            border-radius: 12px;
+            padding: 1rem 1.5rem;
+            box-shadow: var(--shadow-lg);
+            border-left: 4px solid var(--primary);
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            z-index: 1001;
+            transform: translateY(-100px);
+            opacity: 0;
+            transition: all 0.4s ease;
+        }
+
+        @media (min-width: 768px) {
+            .toast {
+                left: auto;
+                right: 2rem;
+                max-width: 400px;
+            }
+        }
+
+        .toast.show {
+            transform: translateY(0);
+            opacity: 1;
+        }
+
+        .toast-icon {
+            width: 40px;
+            height: 40px;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.2rem;
+            background: var(--primary);
+        }
+
+        .toast-content {
+            flex: 1;
+        }
+
+        .toast-title {
+            font-weight: 600;
+            margin-bottom: 0.2rem;
+        }
+
+        .toast-message {
+            font-size: 0.9rem;
+            color: var(--text-muted);
+        }
+
+        /* Worker Details Panel */
+        .worker-details {
+            margin-top: 1.5rem;
+            padding-top: 1.5rem;
+            border-top: 1px solid var(--dark-border);
+            display: none;
+        }
+
+        .worker-details.show {
+            display: block;
+            animation: fadeIn 0.5s ease;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+            }
+
+            to {
+                opacity: 1;
+            }
+        }
+
+        .details-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .detail-item {
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+        }
+
+        .detail-label {
+            font-size: 0.8rem;
+            color: var(--text-muted);
+        }
+
+        .detail-value {
+            font-size: 1rem;
+            font-weight: 500;
+        }
+
+        .earnings-breakdown {
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 12px;
+            padding: 1rem;
+            margin-top: 1rem;
+        }
+
+        .breakdown-title {
+            font-size: 1rem;
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+        }
+
+        .breakdown-item {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 0.5rem;
+        }
+
+        /* All Users View */
+        .all-users-section {
+            padding: 1rem;
+            max-width: 1400px;
+            margin: 0 auto;
+            width: 100%;
+        }
+
+        .users-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 1rem;
+        }
+
+        .users-table th,
+        .users-table td {
+            padding: 0.8rem;
+            text-align: left;
+            border-bottom: 1px solid var(--dark-border);
+        }
+
+        .users-table th {
+            background: rgba(255, 255, 255, 0.05);
+            font-weight: 600;
+        }
+
+        .users-table tr:hover {
+            background: rgba(255, 255, 255, 0.02);
+        }
+
+        /* Tabs */
+        .tabs {
+            display: flex;
+            border-bottom: 1px solid var(--dark-border);
+            margin-bottom: 1.5rem;
+            width: 100%;
+            max-width: 1400px;
+            margin: 0 auto 1.5rem;
+            padding: 0 1rem;
+        }
+
+        @media (min-width: 768px) {
+            .tabs {
+                padding: 0 2rem;
+            }
+        }
+
+        .tab {
+            padding: 0.8rem 1.5rem;
+            cursor: pointer;
+            border-bottom: 2px solid transparent;
+            transition: all 0.3s ease;
+        }
+
+        .tab.active {
+            border-bottom: 2px solid var(--primary);
+            color: var(--primary);
+        }
+
+        .tab-content {
+            display: none;
+            width: 100%;
+        }
+
+        .tab-content.active {
+            display: block;
+            animation: fadeIn 0.5s ease;
+        }
+
+        /* Attendance Summary */
+        .attendance-summary {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1rem;
+            margin-top: 1.5rem;
+        }
+
+        .summary-card {
+            background: var(--dark-card);
+            border-radius: 12px;
+            padding: 1rem;
+            border: 1px solid var(--dark-border);
+        }
+
+        .summary-title {
+            font-size: 0.9rem;
+            color: var(--text-muted);
+            margin-bottom: 0.5rem;
+        }
+
+        .summary-value {
+            font-size: 1.5rem;
+            font-weight: 600;
+        }
+
+        /* Import Modal */
+        .import-modal {
+            max-width: 600px;
+        }
+
+        /* Site Management Section */
+        .site-management-section {
+            background: var(--dark-card);
+            border-radius: 16px;
+            padding: 1.5rem;
+            margin: 1.5rem 1rem;
+            box-shadow: var(--shadow);
+            border: 1px solid var(--dark-border);
+        }
+
+        @media (min-width: 768px) {
+            .site-management-section {
+                margin: 1.5rem 2rem;
+            }
+        }
+
+        .site-management-title {
+            font-family: 'Montserrat', sans-serif;
+            font-size: 1.2rem;
+            font-weight: 700;
+            margin-bottom: 1rem;
+        }
+
+        .site-management-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1rem;
+        }
+
+        .site-card {
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 12px;
+            padding: 1rem;
+            border: 1px solid var(--dark-border);
+        }
+
+        .site-name {
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .site-icon {
+            color: var(--accent);
+        }
+
+        .site-details {
+            font-size: 0.9rem;
+            color: var(--text-muted);
+        }
+
+        .site-actions {
+            display: flex;
+            gap: 0.5rem;
+            margin-top: 0.5rem;
+        }
+
+        /* Clear Data Section */
+        .clear-data-section {
+            background: var(--dark-card);
+            border-radius: 16px;
+            padding: 1.5rem;
+            margin: 1.5rem 1rem;
+            box-shadow: var(--shadow);
+            border: 1px solid var(--dark-border);
+        }
+
+        @media (min-width: 768px) {
+            .clear-data-section {
+                margin: 1.5rem 2rem;
+            }
+        }
+
+        .clear-data-title {
+            font-family: 'Montserrat', sans-serif;
+            font-size: 1.2rem;
+            font-weight: 700;
+            margin-bottom: 1rem;
+        }
+
+        .clear-data-options {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 1rem;
+        }
+
+        /* Calendar Styles */
+        .calendar-container {
+            background: var(--dark-card);
+            border-radius: 12px;
+            padding: 1rem;
+            border: 1px solid var(--dark-border);
+            margin-bottom: 1rem;
+        }
+
+        .calendar-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1rem;
+        }
+
+        .calendar-nav {
+            background: var(--primary);
+            border: none;
+            color: white;
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+        }
+
+        .calendar-grid {
+            display: grid;
+            grid-template-columns: repeat(7, 1fr);
+            gap: 4px;
+        }
+
+        .calendar-day-header {
+            text-align: center;
+            font-weight: 600;
+            padding: 0.5rem;
+            font-size: 0.8rem;
+            color: var(--text-muted);
+        }
+
+        .calendar-day {
+            aspect-ratio: 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            font-size: 0.9rem;
+        }
+
+        .calendar-day:hover {
+            background: rgba(255, 255, 255, 0.05);
+        }
+
+        .calendar-day.selected {
+            background: var(--primary);
+            color: white;
+        }
+
+        .calendar-day.other-month {
+            color: var(--text-muted);
+            opacity: 0.5;
+        }
+
+        .calendar-day.today {
+            border: 2px solid var(--accent);
+        }
+
+        /* Loading Spinner */
+        .loading-spinner {
+            display: none;
+            width: 40px;
+            height: 40px;
+            border: 4px solid rgba(255, 255, 255, 0.1);
+            border-left: 4px solid var(--accent);
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin: 2rem auto;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        /* Error States */
+        .error-message {
+            background: rgba(255, 59, 48, 0.1);
+            border: 1px solid var(--danger);
+            border-radius: 8px;
+            padding: 1rem;
+            margin: 1rem 0;
+            color: var(--danger);
+        }
+
+        /* Empty States */
+        .empty-state {
+            text-align: center;
+            padding: 3rem 1rem;
+            color: var(--text-muted);
+        }
+
+        .empty-state i {
+            font-size: 3rem;
+            margin-bottom: 1rem;
+            opacity: 0.5;
+        }
+
+        /* Responsive Improvements */
+        @media (max-width: 768px) {
+            .controls-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .employee-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .stats-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+            
+            .tabs {
+                overflow-x: auto;
+                white-space: nowrap;
+            }
+            
+            .attendance-matrix {
+                grid-template-columns: repeat(7, 1fr);
+                gap: 0.3rem;
+            }
+            
+            .day-cell {
+                min-width: 28px;
+                font-size: 0.6rem;
+            }
+            
+            .day-label {
+                font-size: 0.5rem;
+            }
+        }
+
+        /* Print Styles */
+        @media print {
+            .app-header, .tabs, .controls-section, .fab {
+                display: none !important;
+            }
+            
+            .app-container {
+                padding: 0;
+            }
+            
+            .tab-content.active {
+                display: block !important;
+            }
+            
+            body {
+                background: white;
+                color: black;
+            }
+            
+            .employee-card, .stat-card, .site-card {
+                box-shadow: none;
+                border: 1px solid #ddd;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div class="app-container">
+        <!-- Header -->
+        <header class="app-header">
+            <div class="header-content">
+                <div class="logo">
+                    <div class="logo-icon">
+                        <i class="fas fa-hard-hat"></i>
+                    </div>
+                    <div>
+                        <div class="logo-text">Tonny Lays</div>
+                        <div class="company-name">Construction Attendance Pro</div>
+                    </div>
+                </div>
+                <div class="header-controls">
+                    <div class="sync-status" id="syncStatus">
+                        <i class="fas fa-cloud"></i>
+                        <span>Ready</span>
+                    </div>
+                    <select class="period-selector" id="periodSelector">
+                        <option value="current">Current Fortnight</option>
+                        <option value="previous">Previous Fortnight</option>
+                        <option value="custom">Custom Period</option>
+                    </select>
+                    <select class="site-selector" id="siteSelector">
+                        <!-- Sites will be populated dynamically -->
+                    </select>
+                    <div class="passkey-display">
+                        <i class="fas fa-key"></i>
+                        <span id="passkeyDisplay">TL-APP-2024</span>
+                    </div>
+                </div>
+            </div>
+        </header>
+
+        <!-- Tabs -->
+        <div class="tabs">
+            <div class="tab active" data-tab="attendance">Attendance</div>
+            <div class="tab" data-tab="all-users">All Workers</div>
+            <div class="tab" data-tab="reports">Reports</div>
+            <div class="tab" data-tab="sites">Site Management</div>
+        </div>
+
+        <!-- Attendance Tab -->
+        <div class="tab-content active" id="attendance-tab">
+            <!-- Stats -->
+            <section class="stats-section">
+                <div class="stats-grid">
+                    <div class="stat-card stat-1">
+                        <div class="stat-icon">
+                            <i class="fas fa-users"></i>
+                        </div>
+                        <div class="stat-value" id="totalWorkers">0</div>
+                        <div class="stat-label">Total Workers</div>
+                    </div>
+                    <div class="stat-card stat-2">
+                        <div class="stat-icon">
+                            <i class="fas fa-calendar-check"></i>
+                        </div>
+                        <div class="stat-value" id="presentToday">0</div>
+                        <div class="stat-label">Present Today</div>
+                    </div>
+                    <div class="stat-card stat-3">
+                        <div class="stat-icon">
+                            <i class="fas fa-chart-line"></i>
+                        </div>
+                        <div class="stat-value" id="attendanceRate">0%</div>
+                        <div class="stat-label">Attendance Rate</div>
+                    </div>
+                    <div class="stat-card stat-4">
+                        <div class="stat-icon">
+                            <i class="fas fa-money-bill-wave"></i>
+                        </div>
+                        <div class="stat-value" id="totalPay">R 0</div>
+                        <div class="stat-label">Fortnight Payroll</div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Custom Period Selector -->
+            <section class="filters-section" id="customPeriodSection" style="display: none;">
+                <div class="filters-grid">
+                    <div class="filter-group">
+                        <label class="filter-label">Start Date</label>
+                        <input type="date" class="form-input" id="customStartDate">
+                    </div>
+                    <div class="filter-group">
+                        <label class="filter-label">End Date</label>
+                        <input type="date" class="form-input" id="customEndDate">
+                    </div>
+                    <div class="filter-group">
+                        <button class="control-btn primary" onclick="applyCustomPeriod()">
+                            <i class="fas fa-check"></i> Apply Period
+                        </button>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Filters -->
+            <section class="filters-section">
+                <div class="filters-grid">
+                    <div class="filter-group">
+                        <label class="filter-label">Filter by Role</label>
+                        <select class="filter-select" id="roleFilter">
+                            <option value="all">All Roles</option>
+                            <option value="Bricklayer">Bricklayers</option>
+                            <option value="Labourer">Labourers</option>
+                            <option value="Plasterer">Plasterers</option>
+                            <option value="Plaster Labourer">Plaster Labourers</option>
+                            <option value="Plaster Operator">Plaster Operators</option>
+                            <option value="Transport">Transport</option>
+                        </select>
+                    </div>
+
+                    <div class="filter-group">
+                        <label class="filter-label">Attendance Status</label>
+                        <select class="filter-select" id="attendanceFilter">
+                            <option value="all">All Workers</option>
+                            <option value="present">Present Today</option>
+                            <option value="absent">Absent Today</option>
+                            <option value="not-marked">Not Marked Today</option>
+                        </select>
+                    </div>
+
+                    <div class="active-filters" id="activeFilters">
+                        <!-- Active filters will appear here -->
+                    </div>
+                </div>
+            </section>
+
+            <!-- Controls -->
+            <section class="controls-section">
+                <div class="controls-grid">
+                    <button class="control-btn primary" onclick="markAllPresentToday()">
+                        <i class="fas fa-check-circle"></i> Mark All Present
+                    </button>
+                    <button class="control-btn" onclick="exportToExcel()">
+                        <i class="fas fa-file-excel"></i> Export Excel
+                    </button>
+                    <button class="control-btn" onclick="showAddWorkerModal()">
+                        <i class="fas fa-user-plus"></i> Add Worker
+                    </button>
+                    <button class="control-btn cloud" onclick="exportBackup()">
+                        <i class="fas fa-download"></i> Backup Data
+                    </button>
+                    <button class="control-btn success" onclick="saveData()">
+                        <i class="fas fa-save"></i> Save Data
+                    </button>
+                    <button class="control-btn danger" onclick="clearAllAttendance()">
+                        <i class="fas fa-broom"></i> Clear All
+                    </button>
+                    <button class="control-btn" onclick="exportAllUsersPDF()">
+                        <i class="fas fa-file-pdf"></i> All Users PDF
+                    </button>
+                    <button class="control-btn" onclick="showImportModal()">
+                        <i class="fas fa-file-import"></i> Import Excel
+                    </button>
+                    <button class="control-btn" onclick="exportBankVerificationPDF()">
+                        <i class="fas fa-file-pdf"></i> Bank Verification
+                    </button>
+                </div>
+            </section>
+
+            <!-- Main Content -->
+            <main class="main-content">
+                <div class="content-header">
+                    <h2 class="section-title">Worker Attendance</h2>
+                    <input type="text" class="search-box" id="searchInput" placeholder="Search workers...">
+                </div>
+                
+                <div class="loading-spinner" id="loadingSpinner"></div>
+                
+                <div id="emptyState" class="empty-state" style="display: none;">
+                    <i class="fas fa-users"></i>
+                    <h3>No Workers Found</h3>
+                    <p>Add workers to get started with attendance tracking</p>
+                    <button class="control-btn primary" onclick="showAddWorkerModal()" style="margin-top: 1rem;">
+                        <i class="fas fa-user-plus"></i> Add Your First Worker
+                    </button>
+                </div>
+                
+                <div class="employee-grid" id="employeeGrid">
+                    <!-- Dynamic content -->
+                </div>
+            </main>
+        </div>
+
+        <!-- All Users Tab -->
+        <div class="tab-content" id="all-users-tab">
+            <div class="all-users-section">
+                <div class="content-header">
+                    <h2 class="section-title">All Workers</h2>
+                    <button class="control-btn primary" onclick="showAddWorkerModal()">
+                        <i class="fas fa-user-plus"></i> Add Worker
+                    </button>
+                </div>
+                
+                <div id="usersEmptyState" class="empty-state" style="display: none;">
+                    <i class="fas fa-users"></i>
+                    <h3>No Workers Added Yet</h3>
+                    <p>Start by adding workers to your team</p>
+                </div>
+                
+                <div class="table-container">
+                    <table class="users-table" id="usersTable">
+                        <thead>
+                            <tr>
+                                <th>Name</th>
+                                <th>Role</th>
+                                <th>Rate</th>
+                                <th>Site</th>
+                                <th>Bank</th>
+                                <th>Account No.</th>
+                                <th>Days Worked</th>
+                                <th>Total Pay</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="usersTableBody">
+                            <!-- Dynamic content -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <!-- Reports Tab -->
+        <div class="tab-content" id="reports-tab">
+            <div class="all-users-section">
+                <div class="content-header">
+                    <h2 class="section-title">Reports & Analytics</h2>
+                    <div>
+                        <button class="control-btn" onclick="exportAllUsersPDF()">
+                            <i class="fas fa-file-pdf"></i> All Users PDF
+                        </button>
+                        <button class="control-btn primary" onclick="exportBankVerificationPDF()">
+                            <i class="fas fa-file-pdf"></i> Bank Verification
+                        </button>
+                    </div>
+                </div>
+                <div class="attendance-summary">
+                    <div class="summary-card">
+                        <div class="summary-title">Total Workers</div>
+                        <div class="summary-value" id="reportTotalWorkers">0</div>
+                    </div>
+                    <div class="summary-card">
+                        <div class="summary-title">Average Attendance Rate</div>
+                        <div class="summary-value" id="reportAttendanceRate">0%</div>
+                    </div>
+                    <div class="summary-card">
+                        <div class="summary-title">Total Payroll</div>
+                        <div class="summary-value" id="reportTotalPay">R 0</div>
+                    </div>
+                    <div class="summary-card">
+                        <div class="summary-title">Days in Period</div>
+                        <div class="summary-value" id="reportDaysInPeriod">14</div>
+                    </div>
+                </div>
+                <div class="users-table-container" style="margin-top: 2rem;">
+                    <h3 style="margin-bottom: 1rem;">Payroll Summary by Role</h3>
+                    <table class="users-table" id="reportsTable">
+                        <thead>
+                            <tr>
+                                <th>Role</th>
+                                <th>Workers</th>
+                                <th>Total Days</th>
+                                <th>Total Pay</th>
+                            </tr>
+                        </thead>
+                        <tbody id="reportsTableBody">
+                            <!-- Dynamic content -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <!-- Site Management Tab -->
+        <div class="tab-content" id="sites-tab">
+            <section class="site-management-section">
+                <h2 class="site-management-title">Site Management</h2>
+                <div class="site-management-grid" id="siteManagementGrid">
+                    <!-- Dynamic content -->
+                </div>
+            </section>
+
+            <section class="clear-data-section">
+                <h2 class="clear-data-title">Data Management</h2>
+                <div class="clear-data-options">
+                    <button class="control-btn danger" onclick="clearSiteData()">
+                        <i class="fas fa-broom"></i> Clear Current Site Data
+                    </button>
+                    <button class="control-btn danger" onclick="clearAllData()">
+                        <i class="fas fa-broom"></i> Clear All Data
+                    </button>
+                    <button class="control-btn cloud" onclick="exportBackup()">
+                        <i class="fas fa-download"></i> Export Backup
+                    </button>
+                    <button class="control-btn" onclick="showRestoreModal()">
+                        <i class="fas fa-upload"></i> Restore Backup
+                    </button>
+                </div>
+            </section>
+        </div>
+    </div>
+
+    <!-- FAB -->
+    <div class="fab" onclick="showAddWorkerModal()">
+        <i class="fas fa-plus"></i>
+    </div>
+
+    <!-- Add Worker Modal -->
+    <div class="modal" id="addWorkerModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 class="modal-title">Add New Worker</h3>
+                <button class="close-modal" onclick="closeModal('addWorkerModal')">&times;</button>
+            </div>
+            <div class="form-group">
+                <label class="form-label">Full Name</label>
+                <input type="text" class="form-input" id="workerName" placeholder="Enter full name">
+            </div>
+            <div class="form-group">
+                <label class="form-label">Role</label>
+                <select class="form-input" id="workerRole">
+                    <option value="Bricklayer">Bricklayer</option>
+                    <option value="Labourer">Labourer</option>
+                    <option value="Plasterer">Plasterer</option>
+                    <option value="Plaster Labourer">Plaster Labourer</option>
+                    <option value="Plaster Operator">Plaster Operator</option>
+                    <option value="Transport">Transport</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label class="form-label">Daily Rate (R)</label>
+                <input type="number" class="form-input" id="workerRate" placeholder="Enter daily rate">
+            </div>
+            <div class="form-group">
+                <label class="form-label">Bank Name</label>
+                <input type="text" class="form-input" id="workerBank" placeholder="e.g., ABSA Bank">
+            </div>
+            <div class="form-group">
+                <label class="form-label">Account Number</label>
+                <input type="text" class="form-input" id="workerAccount" placeholder="e.g., 1002345">
+            </div>
+            <div class="form-group">
+                <label class="form-label">Phone Number (Optional)</label>
+                <input type="text" class="form-input" id="workerPhone" placeholder="e.g., 0712345678">
+            </div>
+            <div class="form-group">
+                <label class="form-label">Loans (R) - Optional</label>
+                <input type="number" class="form-input" id="workerLoans" placeholder="Enter loan amount">
+            </div>
+            <div class="form-group">
+                <label class="form-label">Other Income (R) - Optional</label>
+                <input type="number" class="form-input" id="workerIncome" placeholder="Enter other income">
+            </div>
+            <div class="form-group">
+                <label class="form-label">Site</label>
+                <select class="form-input" id="workerSite">
+                    <!-- Sites will be populated dynamically -->
+                </select>
+            </div>
+            <div class="form-actions">
+                <button class="btn btn-secondary" onclick="closeModal('addWorkerModal')">Cancel</button>
+                <button class="btn btn-primary" onclick="addWorker()">Add Worker</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Edit Worker Modal -->
+    <div class="modal" id="editWorkerModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 class="modal-title">Edit Worker</h3>
+                <button class="close-modal" onclick="closeModal('editWorkerModal')">&times;</button>
+            </div>
+            <div class="form-group">
+                <label class="form-label">Full Name</label>
+                <input type="text" class="form-input" id="editWorkerName" placeholder="Enter full name">
+            </div>
+            <div class="form-group">
+                <label class="form-label">Role</label>
+                <select class="form-input" id="editWorkerRole">
+                    <option value="Bricklayer">Bricklayer</option>
+                    <option value="Labourer">Labourer</option>
+                    <option value="Plasterer">Plasterer</option>
+                    <option value="Plaster Labourer">Plaster Labourer</option>
+                    <option value="Plaster Operator">Plaster Operator</option>
+                    <option value="Transport">Transport</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label class="form-label">Daily Rate (R)</label>
+                <input type="number" class="form-input" id="editWorkerRate" placeholder="Enter daily rate">
+            </div>
+            <div class="form-group">
+                <label class="form-label">Bank Name</label>
+                <input type="text" class="form-input" id="editWorkerBank" placeholder="e.g., ABSA Bank">
+            </div>
+            <div class="form-group">
+                <label class="form-label">Account Number</label>
+                <input type="text" class="form-input" id="editWorkerAccount" placeholder="e.g., 1002345">
+            </div>
+            <div class="form-group">
+                <label class="form-label">Phone Number (Optional)</label>
+                <input type="text" class="form-input" id="editWorkerPhone" placeholder="e.g., 0712345678">
+            </div>
+            <div class="form-group">
+                <label class="form-label">Loans (R) - Optional</label>
+                <input type="number" class="form-input" id="editWorkerLoans" placeholder="Enter loan amount">
+            </div>
+            <div class="form-group">
+                <label class="form-label">Other Income (R) - Optional</label>
+                <input type="number" class="form-input" id="editWorkerIncome" placeholder="Enter other income">
+            </div>
+            <div class="form-group">
+                <label class="form-label">Site</label>
+                <select class="form-input" id="editWorkerSite">
+                    <!-- Sites will be populated dynamically -->
+                </select>
+            </div>
+            <div class="form-actions">
+                <button class="btn btn-secondary" onclick="closeModal('editWorkerModal')">Cancel</button>
+                <button class="btn btn-primary" onclick="saveWorkerChanges()">Save Changes</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Add Site Modal -->
+    <div class="modal" id="addSiteModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 class="modal-title">Add New Site</h3>
+                <button class="close-modal" onclick="closeModal('addSiteModal')">&times;</button>
+            </div>
+            <div class="form-group">
+                <label class="form-label">Site Name</label>
+                <input type="text" class="form-input" id="siteName" placeholder="Enter site name">
+            </div>
+            <div class="form-group">
+                <label class="form-label">Site Code</label>
+                <input type="text" class="form-input" id="siteCode" placeholder="Enter site code">
+            </div>
+            <div class="form-group">
+                <label class="form-label">Fortnight Start Date</label>
+                <div class="calendar-container" id="siteCalendar"></div>
+            </div>
+            <div class="form-actions">
+                <button class="btn btn-secondary" onclick="closeModal('addSiteModal')">Cancel</button>
+                <button class="btn btn-primary" onclick="addSite()">Add Site</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Edit Site Modal -->
+    <div class="modal" id="editSiteModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 class="modal-title">Edit Site</h3>
+                <button class="close-modal" onclick="closeModal('editSiteModal')">&times;</button>
+            </div>
+            <div class="form-group">
+                <label class="form-label">Site Name</label>
+                <input type="text" class="form-input" id="editSiteName" placeholder="Enter site name">
+            </div>
+            <div class="form-group">
+                <label class="form-label">Site Code</label>
+                <input type="text" class="form-input" id="editSiteCode" placeholder="Enter site code">
+            </div>
+            <div class="form-group">
+                <label class="form-label">Fortnight Start Date</label>
+                <div class="calendar-container" id="editSiteCalendar"></div>
+            </div>
+            <div class="form-actions">
+                <button class="btn btn-secondary" onclick="closeModal('editSiteModal')">Cancel</button>
+                <button class="btn btn-primary" onclick="saveSiteChanges()">Save Changes</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Import Modal -->
+    <div class="modal" id="importModal">
+        <div class="modal-content import-modal">
+            <div class="modal-header">
+                <h3 class="modal-title">Import Excel Data</h3>
+                <button class="close-modal" onclick="closeModal('importModal')">&times;</button>
+            </div>
+            <div class="form-group">
+                <label class="form-label">Select Excel File</label>
+                <input type="file" class="form-input" id="excelFile" accept=".xlsx, .xls">
+            </div>
+            <div class="form-actions">
+                <button class="btn btn-secondary" onclick="closeModal('importModal')">Cancel</button>
+                <button class="btn btn-primary" onclick="importExcelData()">Import Data</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Restore Backup Modal -->
+    <div class="modal" id="restoreModal">
+        <div class="modal-content import-modal">
+            <div class="modal-header">
+                <h3 class="modal-title">Restore Backup</h3>
+                <button class="close-modal" onclick="closeModal('restoreModal')">&times;</button>
+            </div>
+            <div class="form-group">
+                <label class="form-label">Select Backup File</label>
+                <input type="file" class="form-input" id="backupFile" accept=".json">
+            </div>
+            <div class="form-actions">
+                <button class="btn btn-secondary" onclick="closeModal('restoreModal')">Cancel</button>
+                <button class="btn btn-primary" onclick="restoreBackup()">Restore Backup</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Duplicate Worker Modal -->
+    <div class="modal" id="duplicateModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 class="modal-title">Duplicate Worker</h3>
+                <button class="close-modal" onclick="closeModal('duplicateModal')">&times;</button>
+            </div>
+            <div class="form-group">
+                <div id="duplicateWorkerInfo" class="form-label" style="font-size: 1rem; margin-bottom: 1rem;">
+                    <!-- Worker info will be populated here -->
+                </div>
+                <label class="form-label">Select Target Site</label>
+                <select class="form-input" id="duplicateSite">
+                    <!-- Sites will be populated dynamically -->
+                </select>
+            </div>
+            <div class="form-actions">
+                <button class="btn btn-secondary" onclick="closeModal('duplicateModal')">Cancel</button>
+                <button class="btn btn-primary" onclick="duplicateWorker()">Duplicate Worker</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Toast -->
+    <div class="toast" id="toast">
+        <div class="toast-icon">
+            <i class="fas fa-check"></i>
+        </div>
+        <div class="toast-content">
+            <div class="toast-title">Success</div>
+            <div class="toast-message">Operation completed successfully</div>
+        </div>
+    </div>
+
+    <script>
+        // Initialize the app when DOM is loaded
+        document.addEventListener('DOMContentLoaded', function () {
+            initializeApp();
+        });
+
+        // Global variables
+        let workers = [];
+        let sites = [];
+        let currentPeriod = 'current';
+        let selectedSite = '';
+        let searchTerm = '';
+        let roleFilter = 'all';
+        let attendanceFilter = 'all';
+        let currentEditingWorkerId = null;
+        let currentEditingSiteId = null;
+        let customPeriod = null;
+
+        // Role order for sorting
+        const roleOrder = {
+            'Bricklayer': 1,
+            'Labourer': 2,
+            'Plasterer': 3,
+            'Plaster Operator': 4,
+            'Plaster Labourer': 5,
+            'Transport': 6
+        };
+
+        // Initialize the application
+        function initializeApp() {
+            loadData();
+            setupEventListeners();
+            renderWorkers();
+            updateStats();
+            setupTabs();
+            updatePeriodSelector();
+            renderAllUsersTable();
+            renderReportsTable();
+            renderSiteManagement();
+            
+            // Set default custom period dates
+            const today = new Date();
+            const startDate = new Date(today);
+            startDate.setDate(today.getDate() - 13); // 14 days total
+            document.getElementById('customStartDate').valueAsDate = startDate;
+            document.getElementById('customEndDate').valueAsDate = today;
+        }
+
+        // Set up event listeners
+        function setupEventListeners() {
+            document.getElementById('searchInput').addEventListener('input', function (e) {
+                searchTerm = e.target.value.toLowerCase();
+                renderWorkers();
+                updateStats();
+            });
+
+            document.getElementById('roleFilter').addEventListener('change', function (e) {
+                roleFilter = e.target.value;
+                renderWorkers();
+                updateStats();
+            });
+
+            document.getElementById('attendanceFilter').addEventListener('change', function (e) {
+                attendanceFilter = e.target.value;
+                renderWorkers();
+                updateStats();
+            });
+
+            document.getElementById('siteSelector').addEventListener('change', function (e) {
+                selectedSite = e.target.value;
+                renderWorkers();
+                updateStats();
+            });
+
+            document.getElementById('periodSelector').addEventListener('change', function (e) {
+                currentPeriod = e.target.value;
+                
+                // Show/hide custom period selector
+                const customSection = document.getElementById('customPeriodSection');
+                if (currentPeriod === 'custom') {
+                    customSection.style.display = 'block';
+                } else {
+                    customSection.style.display = 'none';
+                    customPeriod = null;
+                }
+                
+                renderWorkers();
+                updateStats();
+            });
+        }
+
+        // Set up tab navigation
+        function setupTabs() {
+            const tabs = document.querySelectorAll('.tab');
+            tabs.forEach(tab => {
+                tab.addEventListener('click', function () {
+                    // Remove active class from all tabs and contents
+                    tabs.forEach(t => t.classList.remove('active'));
+                    document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+
+                    // Add active class to clicked tab and corresponding content
+                    this.classList.add('active');
+                    const tabId = this.getAttribute('data-tab');
+                    document.getElementById(`${tabId}-tab`).classList.add('active');
+
+                    // Refresh content if needed
+                    if (tabId === 'all-users') {
+                        renderAllUsersTable();
+                    } else if (tabId === 'reports') {
+                        renderReports();
+                    } else if (tabId === 'sites') {
+                        renderSiteManagement();
+                    }
+                });
+            });
+        }
+
+        // Update period selector with current and future fortnights
+        function updatePeriodSelector() {
+            const periodSelector = document.getElementById('periodSelector');
+            
+            // Keep custom option if selected
+            const hasCustom = periodSelector.querySelector('option[value="custom"]');
+            if (!hasCustom) {
+                const customOption = document.createElement('option');
+                customOption.value = 'custom';
+                customOption.textContent = 'Custom Period';
+                periodSelector.appendChild(customOption);
+            }
+        }
+
+        // Apply custom period
+        function applyCustomPeriod() {
+            const startDate = document.getElementById('customStartDate').value;
+            const endDate = document.getElementById('customEndDate').value;
+            
+            if (!startDate || !endDate) {
+                showToast('Please select both start and end dates', 'error');
+                return;
+            }
+            
+            const start = new Date(startDate);
+            const end = new Date(endDate);
+            
+            if (start > end) {
+                showToast('Start date cannot be after end date', 'error');
+                return;
+            }
+            
+            customPeriod = {
+                start: start,
+                end: end,
+                days: getDaysInRange(start, end)
+            };
+            
+            renderWorkers();
+            updateStats();
+            showToast('Custom period applied successfully', 'success');
+        }
+
+        // Get current fortnight based on selected site
+        function getCurrentFortnight() {
+            // If custom period is selected, use it
+            if (currentPeriod === 'custom' && customPeriod) {
+                return customPeriod;
+            }
+            
+            const site = sites.find(s => s.name === selectedSite);
+            let startDate;
+            
+            if (site && site.startDate) {
+                // Calculate current fortnight based on site's start date
+                startDate = getCurrentFortnightStart(new Date(site.startDate));
+            } else {
+                // Default to Tuesday start
+                startDate = getCurrentFortnightStart(new Date());
+                startDate.setDate(startDate.getDate() - (startDate.getDay() + 5) % 7); // Adjust to Tuesday
+            }
+            
+            const endDate = new Date(startDate);
+            endDate.setDate(endDate.getDate() + 13); // 14 days total
+            
+            return {
+                start: startDate,
+                end: endDate,
+                days: getDaysInRange(startDate, endDate)
+            };
+        }
+
+        // Calculate current fortnight start based on a reference date
+        function getCurrentFortnightStart(referenceDate) {
+            const today = new Date();
+            const refDate = new Date(referenceDate);
+            
+            // Calculate days between reference date and today
+            const daysDiff = Math.floor((today - refDate) / (1000 * 60 * 60 * 24));
+            
+            // Find the most recent fortnight start
+            const fortnightsSinceRef = Math.floor(daysDiff / 14);
+            const startDate = new Date(refDate);
+            startDate.setDate(refDate.getDate() + (fortnightsSinceRef * 14));
+            
+            return startDate;
+        }
+
+        // Get previous fortnight
+        function getPreviousFortnight() {
+            const currentFortnight = getCurrentFortnight();
+            const startDate = new Date(currentFortnight.start);
+            startDate.setDate(startDate.getDate() - 14);
+            const endDate = new Date(currentFortnight.start);
+            endDate.setDate(endDate.getDate() - 1);
+
+            return {
+                start: startDate,
+                end: endDate,
+                days: getDaysInRange(startDate, endDate)
+            };
+        }
+
+        // Get all days in a date range
+        function getDaysInRange(startDate, endDate) {
+            const days = [];
+            const currentDate = new Date(startDate);
+
+            while (currentDate <= endDate) {
+                days.push(new Date(currentDate));
+                currentDate.setDate(currentDate.getDate() + 1);
+            }
+
+            return days;
+        }
+
+        // Get the current fortnight based on selected period
+        function getSelectedFortnight() {
+            if (currentPeriod === 'current') {
+                return getCurrentFortnight();
+            } else if (currentPeriod === 'previous') {
+                return getPreviousFortnight();
+            } else if (currentPeriod === 'custom' && customPeriod) {
+                return customPeriod;
+            } else {
+                return getCurrentFortnight();
+            }
+        }
+
+        // Format date for display (DD/MM/YYYY)
+        function formatDate(date) {
+            if (!date) return '';
+
+            const d = new Date(date);
+            const day = d.getDate().toString().padStart(2, '0');
+            const month = (d.getMonth() + 1).toString().padStart(2, '0');
+            const year = d.getFullYear();
+
+            return `${day}/${month}/${year}`;
+        }
+
+        // Format date for display with month name (e.g., "15 Oct")
+        function formatDateWithMonth(date) {
+            if (!date) return '';
+
+            const d = new Date(date);
+            const day = d.getDate().toString().padStart(2, '0');
+            const monthNames = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+            const month = monthNames[d.getMonth()];
+
+            return `${day} ${month}`;
+        }
+
+        // Load data from localStorage
+        function loadData() {
+            // Show loading state
+            document.getElementById('loadingSpinner').style.display = 'block';
+            
+            try {
+                // Load workers
+                const savedWorkers = localStorage.getItem('tonnyLaysWorkers');
+                if (savedWorkers) {
+                    workers = JSON.parse(savedWorkers);
+                } else {
+                    // Start with empty workers array
+                    workers = [];
+                    saveWorkers();
+                }
+
+                // Load sites
+                const savedSites = localStorage.getItem('tonnyLaysSites');
+                if (savedSites) {
+                    sites = JSON.parse(savedSites);
+                } else {
+                    // Initialize with default site
+                    const defaultStart = new Date();
+                    defaultStart.setDate(defaultStart.getDate() - (defaultStart.getDay() + 5) % 7); // Adjust to Tuesday
+                    
+                    sites = [{ 
+                        id: 'paarl', 
+                        name: 'Paarl', 
+                        code: 'PRL',
+                        startDate: defaultStart.toISOString()
+                    }];
+                    saveSites();
+                }
+
+                // Set selected site to first site if available
+                if (sites.length > 0) {
+                    selectedSite = sites[0].name;
+                }
+
+                // Update site selectors
+                updateSiteSelectors();
+                
+                // Hide loading state
+                setTimeout(() => {
+                    document.getElementById('loadingSpinner').style.display = 'none';
+                }, 500);
+                
+            } catch (error) {
+                console.error('Error loading data:', error);
+                showToast('Error loading data. Please refresh the page.', 'error');
+                document.getElementById('loadingSpinner').style.display = 'none';
+            }
+        }
+
+        // Save workers to localStorage
+        function saveWorkers() {
+            try {
+                localStorage.setItem('tonnyLaysWorkers', JSON.stringify(workers));
+            } catch (error) {
+                console.error('Error saving workers:', error);
+                showToast('Error saving data. Storage might be full.', 'error');
+            }
+        }
+
+        // Save sites to localStorage
+        function saveSites() {
+            try {
+                localStorage.setItem('tonnyLaysSites', JSON.stringify(sites));
+            } catch (error) {
+                console.error('Error saving sites:', error);
+                showToast('Error saving data. Storage might be full.', 'error');
+            }
+        }
+
+        // Update site selectors throughout the app
+        function updateSiteSelectors() {
+            const siteSelectors = [
+                document.getElementById('siteSelector'),
+                document.getElementById('workerSite'),
+                document.getElementById('editWorkerSite'),
+                document.getElementById('duplicateSite')
+            ];
+
+            siteSelectors.forEach(selector => {
+                if (selector) {
+                    selector.innerHTML = '';
+                    
+                    sites.forEach(site => {
+                        const option = document.createElement('option');
+                        option.value = site.name;
+                        option.textContent = site.name;
+                        if (site.name === selectedSite && selector.id === 'siteSelector') {
+                            option.selected = true;
+                        }
+                        selector.appendChild(option);
+                    });
+                    
+                    // If no sites, add a disabled option
+                    if (sites.length === 0) {
+                        const option = document.createElement('option');
+                        option.disabled = true;
+                        option.textContent = 'No sites available';
+                        selector.appendChild(option);
+                    }
+                }
+            });
+        }
+
+        // Sort workers by role
+        function sortWorkersByRole(workersArray) {
+            return workersArray.sort((a, b) => {
+                const roleOrderA = roleOrder[a.role] || 999;
+                const roleOrderB = roleOrder[b.role] || 999;
+
+                if (roleOrderA !== roleOrderB) {
+                    return roleOrderA - roleOrderB;
+                }
+
+                // If same role, sort by name
+                return a.name.localeCompare(b.name);
+            });
+        }
+
+        // Get filtered workers based on current filters
+        function getFilteredWorkers() {
+            return workers.filter(worker => {
+                const matchesSearch = worker.name.toLowerCase().includes(searchTerm);
+                const matchesRole = roleFilter === 'all' || worker.role === roleFilter;
+                const matchesSite = selectedSite === '' || worker.site === selectedSite;
+
+                // Check attendance filter
+                const today = getTodayDate();
+                let matchesAttendance = true;
+                if (attendanceFilter === 'present') {
+                    matchesAttendance = worker.attendance[today] === 'present';
+                } else if (attendanceFilter === 'absent') {
+                    matchesAttendance = worker.attendance[today] === 'absent';
+                } else if (attendanceFilter === 'not-marked') {
+                    matchesAttendance = !worker.attendance[today];
+                }
+
+                return matchesSearch && matchesRole && matchesAttendance && matchesSite;
+            });
+        }
+
+        // Render workers in the grid
+        function renderWorkers() {
+            const employeeGrid = document.getElementById('employeeGrid');
+            const emptyState = document.getElementById('emptyState');
+
+            // Get filtered workers
+            const filteredWorkers = getFilteredWorkers();
+
+            // Show empty state if no workers
+            if (filteredWorkers.length === 0) {
+                employeeGrid.innerHTML = '';
+                emptyState.style.display = 'block';
+                return;
+            } else {
+                emptyState.style.display = 'none';
+            }
+
+            employeeGrid.innerHTML = '';
+
+            // Sort workers by role
+            const sortedWorkers = sortWorkersByRole(filteredWorkers);
+
+            // Create worker cards
+            sortedWorkers.forEach(worker => {
+                const card = createWorkerCard(worker);
+                employeeGrid.appendChild(card);
+            });
+
+            // Update active filters display
+            updateActiveFilters();
+        }
+
+        // Create a worker card element
+        function createWorkerCard(worker) {
+            const card = document.createElement('div');
+            card.className = 'employee-card';
+            card.setAttribute('data-worker-id', worker.id);
+
+            const daysWorked = calculateDaysWorked(worker);
+            const totalPay = daysWorked * worker.rate;
+            const loans = worker.loans || 0;
+            const income = worker.income || 0;
+            const netPay = totalPay + income - loans;
+
+            card.innerHTML = `
+                <div class="card-header">
+                    <div class="employee-info">
+                        <h3>${worker.name} <span class="days-badge">${daysWorked} days</span></h3>
+                        <div class="employee-meta">
+                            <div class="employee-role">
+                                <i class="fas fa-hard-hat"></i> ${worker.role}
+                            </div>
+                            <div class="employee-rate">
+                                R ${worker.rate}/day
+                            </div>
+                        </div>
+                    </div>
+                    <div class="employee-actions">
+                        <div class="action-btn" onclick="editWorker('${worker.id}')">
+                            <i class="fas fa-edit"></i>
+                        </div>
+                        <div class="action-btn duplicate" onclick="showDuplicateModal('${worker.id}')" title="Duplicate to another site">
+                            <i class="fas fa-copy"></i>
+                        </div>
+                        <div class="action-btn delete" onclick="deleteWorker('${worker.id}')">
+                            <i class="fas fa-trash"></i>
+                        </div>
+                    </div>
+                </div>
+                <div class="attendance-section">
+                    <span class="section-label">${getPeriodLabel()}</span>
+                    <div class="attendance-matrix">
+                        ${generateAttendanceMatrix(worker)}
+                    </div>
+                </div>
+                <div class="worker-details" id="details-${worker.id}">
+                    <div class="details-grid">
+                        <div class="detail-item">
+                            <span class="detail-label">Days Worked</span>
+                            <span class="detail-value">${daysWorked}</span>
+                        </div>
+                        <div class="detail-item">
+                            <span class="detail-label">Daily Rate</span>
+                            <span class="detail-value">R ${worker.rate}</span>
+                        </div>
+                        <div class="detail-item">
+                            <span class="detail-label">Gross Salary</span>
+                            <span class="detail-value">R ${totalPay}</span>
+                        </div>
+                        ${loans > 0 ? `
+                        <div class="detail-item">
+                            <span class="detail-label">Loans</span>
+                            <span class="detail-value">- R ${loans}</span>
+                        </div>
+                        ` : ''}
+                        ${income > 0 ? `
+                        <div class="detail-item">
+                            <span class="detail-label">Other Income</span>
+                            <span class="detail-value">+ R ${income}</span>
+                        </div>
+                        ` : ''}
+                        <div class="detail-item">
+                            <span class="detail-label">Net Salary</span>
+                            <span class="detail-value">R ${netPay}</span>
+                        </div>
+                        <div class="detail-item">
+                            <span class="detail-label">Site</span>
+                            <span class="detail-value">${worker.site}</span>
+                        </div>
+                        <div class="detail-item">
+                            <span class="detail-label">Bank</span>
+                            <span class="detail-value">${worker.bank || 'Not specified'}</span>
+                        </div>
+                        <div class="detail-item">
+                            <span class="detail-label">Account No.</span>
+                            <span class="detail-value">${worker.account || 'Not specified'}</span>
+                        </div>
+                    </div>
+                </div>
+            `;
+
+            // Add click event to toggle details
+            card.addEventListener('click', function (e) {
+                // Don't toggle if user clicked on action buttons
+                if (!e.target.closest('.employee-actions')) {
+                    const details = document.getElementById(`details-${worker.id}`);
+                    details.classList.toggle('show');
+                }
+            });
+
+            return card;
+        }
+
+        // Get period label for display
+        function getPeriodLabel() {
+            if (currentPeriod === 'custom' && customPeriod) {
+                return `Custom Period: ${formatDate(customPeriod.start)} - ${formatDate(customPeriod.end)}`;
+            } else if (currentPeriod === 'current') {
+                return 'Current Fortnight';
+            } else {
+                return 'Previous Fortnight';
+            }
+        }
+
+        // Generate attendance matrix for a worker
+        function generateAttendanceMatrix(worker) {
+            const fortnight = getSelectedFortnight();
+            const today = new Date();
+            let matrixHTML = '';
+
+            fortnight.days.forEach(day => {
+                const dateObj = new Date(day);
+                const dayOfWeek = dateObj.getDay();
+                const isWeekend = dayOfWeek === 0 || dayOfWeek === 6;
+                const isToday = isSameDay(dateObj, today);
+                const isFuture = dateObj > today;
+                const dateKey = formatDateForStorage(dateObj);
+                const attendanceStatus = worker.attendance[dateKey] || '';
+
+                let cellClass = 'day-cell';
+                if (isWeekend) cellClass += ' weekend';
+                if (isFuture) cellClass += ' future';
+                if (attendanceStatus === 'present') cellClass += ' present';
+                if (attendanceStatus === 'absent') cellClass += ' absent';
+
+                matrixHTML += `
+                    <div class="${cellClass}" data-date="${dateKey}" onclick="toggleWorkerAttendance('${worker.id}', '${dateKey}')">
+                        <div class="day-label">${formatDateForDisplay(dateObj)}</div>
+                        <div class="status-indicator"></div>
+                    </div>
+                `;
+            });
+
+            return matrixHTML;
+        }
+
+        // Format date for storage (YYYY-MM-DD)
+        function formatDateForStorage(date) {
+            const d = new Date(date);
+            const year = d.getFullYear();
+            const month = (d.getMonth() + 1).toString().padStart(2, '0');
+            const day = d.getDate().toString().padStart(2, '0');
+            return `${year}-${month}-${day}`;
+        }
+
+        // Get today's date in YYYY-MM-DD format
+        function getTodayDate() {
+            const today = new Date();
+            return formatDateForStorage(today);
+        }
+
+        // Format date for display (e.g., "Mon 15")
+        function formatDateForDisplay(date) {
+            const days = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
+            const dayName = days[date.getDay()];
+            const dayNumber = date.getDate();
+            return `${dayName} ${dayNumber}`;
+        }
+
+        // Check if two dates are the same day
+        function isSameDay(date1, date2) {
+            return formatDateForStorage(date1) === formatDateForStorage(date2);
+        }
+
+        // Calculate days worked for a worker in the current fortnight
+        function calculateDaysWorked(worker) {
+            const fortnight = getSelectedFortnight();
+            let daysWorked = 0;
+
+            fortnight.days.forEach(day => {
+                const dateKey = formatDateForStorage(day);
+                if (worker.attendance[dateKey] === 'present') {
+                    daysWorked++;
+                }
+            });
+
+            return daysWorked;
+        }
+
+        // Toggle attendance for a worker on a specific date
+        function toggleWorkerAttendance(workerId, date) {
+            const worker = workers.find(w => w.id === workerId);
+            if (!worker) return;
+
+            const dateObj = new Date(date);
+            const today = new Date();
+
+            // Don't allow marking future dates
+            if (dateObj > today) {
+                showToast('Cannot mark attendance for future dates', 'error');
+                return;
+            }
+
+            // Toggle attendance status
+            if (worker.attendance[date] === 'present') {
+                worker.attendance[date] = 'absent';
+            } else if (worker.attendance[date] === 'absent') {
+                delete worker.attendance[date];
+            } else {
+                worker.attendance[date] = 'present';
+            }
+
+            saveWorkers();
+            renderWorkers();
+            updateStats();
+            showToast(`Attendance updated for ${worker.name}`, 'success');
+        }
+
+        // Mark all workers as present today
+        function markAllPresentToday() {
+            const today = getTodayDate();
+            const siteWorkers = workers.filter(worker => selectedSite === '' || worker.site === selectedSite);
+
+            if (siteWorkers.length === 0) {
+                showToast('No workers to mark as present', 'error');
+                return;
+            }
+
+            siteWorkers.forEach(worker => {
+                worker.attendance[today] = 'present';
+            });
+
+            saveWorkers();
+            renderWorkers();
+            updateStats();
+            showToast(`All workers marked as present for today`, 'success');
+        }
+
+        // Update statistics - FIXED TO USE FILTERED WORKERS
+        function updateStats() {
+            // Get filtered workers based on current filters
+            const filteredWorkers = getFilteredWorkers();
+            const totalWorkers = filteredWorkers.length;
+
+            const today = getTodayDate();
+            const presentToday = filteredWorkers.filter(worker => worker.attendance[today] === 'present').length;
+
+            // Calculate total days worked and payroll for the current fortnight
+            let totalDaysWorked = 0;
+            let totalPay = 0;
+
+            filteredWorkers.forEach(worker => {
+                const daysWorked = calculateDaysWorked(worker);
+                totalDaysWorked += daysWorked;
+                totalPay += daysWorked * worker.rate;
+            });
+
+            // Calculate attendance rate
+            const fortnight = getSelectedFortnight();
+            const totalPossibleDays = totalWorkers * fortnight.days.length;
+            const attendanceRate = totalPossibleDays > 0 ? Math.round((totalDaysWorked / totalPossibleDays) * 100) : 0;
+
+            // Update DOM elements
+            document.getElementById('totalWorkers').textContent = totalWorkers;
+            document.getElementById('presentToday').textContent = presentToday;
+            document.getElementById('attendanceRate').textContent = `${attendanceRate}%`;
+            document.getElementById('totalPay').textContent = `R ${totalPay.toLocaleString()}`;
+        }
+
+        // Update active filters display
+        function updateActiveFilters() {
+            const activeFilters = document.getElementById('activeFilters');
+            activeFilters.innerHTML = '';
+
+            if (roleFilter !== 'all') {
+                const chip = document.createElement('div');
+                chip.className = 'filter-chip';
+                chip.innerHTML = `
+                    Role: ${roleFilter}
+                    <span class="remove" onclick="clearFilter('role')">&times;</span>
+                `;
+                activeFilters.appendChild(chip);
+            }
+
+            if (attendanceFilter !== 'all') {
+                const chip = document.createElement('div');
+                chip.className = 'filter-chip';
+                chip.innerHTML = `
+                    Status: ${attendanceFilter}
+                    <span class="remove" onclick="clearFilter('attendance')">&times;</span>
+                `;
+                activeFilters.appendChild(chip);
+            }
+
+            if (selectedSite !== '') {
+                const chip = document.createElement('div');
+                chip.className = 'filter-chip';
+                chip.innerHTML = `
+                    Site: ${selectedSite}
+                    <span class="remove" onclick="clearFilter('site')">&times;</span>
+                `;
+                activeFilters.appendChild(chip);
+            }
+        }
+
+        // Clear a specific filter
+        function clearFilter(type) {
+            if (type === 'role') {
+                document.getElementById('roleFilter').value = 'all';
+                roleFilter = 'all';
+            } else if (type === 'attendance') {
+                document.getElementById('attendanceFilter').value = 'all';
+                attendanceFilter = 'all';
+            } else if (type === 'site') {
+                document.getElementById('siteSelector').value = '';
+                selectedSite = '';
+            }
+
+            renderWorkers();
+            updateStats();
+        }
+
+        // Show add worker modal
+        function showAddWorkerModal() {
+            document.getElementById('addWorkerModal').style.display = 'flex';
+        }
+
+        // Show add site modal
+        function showAddSiteModal() {
+            // Initialize calendar
+            initCalendar('siteCalendar', new Date());
+            document.getElementById('addSiteModal').style.display = 'flex';
+        }
+
+        // Show import modal
+        function showImportModal() {
+            document.getElementById('importModal').style.display = 'flex';
+        }
+
+        // Show restore modal
+        function showRestoreModal() {
+            document.getElementById('restoreModal').style.display = 'flex';
+        }
+
+        // Close modal
+        function closeModal(modalId) {
+            document.getElementById(modalId).style.display = 'none';
+        }
+
+        // Add a new worker
+        function addWorker() {
+            const name = document.getElementById('workerName').value.trim();
+            const role = document.getElementById('workerRole').value;
+            const rate = parseInt(document.getElementById('workerRate').value);
+            const bank = document.getElementById('workerBank').value.trim();
+            const account = document.getElementById('workerAccount').value.trim();
+            const phone = document.getElementById('workerPhone').value.trim();
+            const loans = parseFloat(document.getElementById('workerLoans').value) || 0;
+            const income = parseFloat(document.getElementById('workerIncome').value) || 0;
+            const site = document.getElementById('workerSite').value;
+
+            if (!name) {
+                showToast('Please enter a name for the worker', 'error');
+                return;
+            }
+
+            if (!rate || rate <= 0) {
+                showToast('Please enter a valid daily rate', 'error');
+                return;
+            }
+
+            if (!site) {
+                showToast('Please select a site for the worker', 'error');
+                return;
+            }
+
+            // Create unique ID by combining name and site
+            const baseId = name.toLowerCase().replace(/\s+/g, '-');
+            const siteSuffix = site.toLowerCase().replace(/\s+/g, '-');
+            const id = `${baseId}-${siteSuffix}`;
+
+            // Check if worker with same name AND site already exists
+            if (workers.find(w => w.id === id)) {
+                showToast('A worker with this name already exists at this site', 'error');
+                return;
+            }
+
+            // Create display name with site suffix for duplicates
+            let displayName = name;
+            const workersWithSameName = workers.filter(w => {
+                const workerBaseName = w.name.split(' (')[0]; // Remove existing site suffix
+                return workerBaseName === name;
+            });
+            
+            if (workersWithSameName.length > 0) {
+                displayName = `${name} (${site})`;
+            }
+
+            const newWorker = {
+                id,
+                name: displayName,
+                role,
+                rate,
+                bank,
+                account,
+                phone,
+                loans,
+                income,
+                site,
+                attendance: {}
+            };
+
+            workers.push(newWorker);
+            saveWorkers();
+            renderWorkers();
+            updateStats();
+            closeModal('addWorkerModal');
+
+            // Reset form
+            document.getElementById('workerName').value = '';
+            document.getElementById('workerRate').value = '';
+            document.getElementById('workerBank').value = '';
+            document.getElementById('workerAccount').value = '';
+            document.getElementById('workerPhone').value = '';
+            document.getElementById('workerLoans').value = '';
+            document.getElementById('workerIncome').value = '';
+
+            showToast(`Worker ${displayName} added successfully`, 'success');
+        }
+
+        // Edit worker
+        function editWorker(workerId) {
+            const worker = workers.find(w => w.id === workerId);
+            if (!worker) return;
+
+            currentEditingWorkerId = workerId;
+
+            // Populate the edit form with current worker data
+            document.getElementById('editWorkerName').value = worker.name;
+            document.getElementById('editWorkerRole').value = worker.role;
+            document.getElementById('editWorkerRate').value = worker.rate;
+            document.getElementById('editWorkerBank').value = worker.bank || '';
+            document.getElementById('editWorkerAccount').value = worker.account || '';
+            document.getElementById('editWorkerPhone').value = worker.phone || '';
+            document.getElementById('editWorkerLoans').value = worker.loans || '';
+            document.getElementById('editWorkerIncome').value = worker.income || '';
+            document.getElementById('editWorkerSite').value = worker.site;
+
+            // Show the edit modal
+            document.getElementById('editWorkerModal').style.display = 'flex';
+        }
+
+        // Save worker changes
+        function saveWorkerChanges() {
+            const worker = workers.find(w => w.id === currentEditingWorkerId);
+            if (!worker) return;
+
+            const name = document.getElementById('editWorkerName').value.trim();
+            const role = document.getElementById('editWorkerRole').value;
+            const rate = parseInt(document.getElementById('editWorkerRate').value);
+            const bank = document.getElementById('editWorkerBank').value.trim();
+            const account = document.getElementById('editWorkerAccount').value.trim();
+            const phone = document.getElementById('editWorkerPhone').value.trim();
+            const loans = parseFloat(document.getElementById('editWorkerLoans').value) || 0;
+            const income = parseFloat(document.getElementById('editWorkerIncome').value) || 0;
+            const site = document.getElementById('editWorkerSite').value;
+
+            if (!name) {
+                showToast('Please enter a name for the worker', 'error');
+                return;
+            }
+
+            if (!rate || rate <= 0) {
+                showToast('Please enter a valid daily rate', 'error');
+                return;
+            }
+
+            if (!site) {
+                showToast('Please select a site for the worker', 'error');
+                return;
+            }
+
+            // Update worker data
+            worker.name = name;
+            worker.role = role;
+            worker.rate = rate;
+            worker.bank = bank;
+            worker.account = account;
+            worker.phone = phone;
+            worker.loans = loans;
+            worker.income = income;
+            worker.site = site;
+
+            saveWorkers();
+            renderWorkers();
+            renderAllUsersTable();
+            updateStats();
+            closeModal('editWorkerModal');
+
+            showToast(`Worker ${name} updated successfully`, 'success');
+        }
+
+        // Initialize calendar
+        function initCalendar(containerId, selectedDate) {
+            const container = document.getElementById(containerId);
+            if (!container) return;
+            
+            const today = new Date();
+            const currentMonth = selectedDate.getMonth();
+            const currentYear = selectedDate.getFullYear();
+            
+            // Get first day of month and total days
+            const firstDay = new Date(currentYear, currentMonth, 1);
+            const lastDay = new Date(currentYear, currentMonth + 1, 0);
+            const daysInMonth = lastDay.getDate();
+            const startingDay = firstDay.getDay();
+            
+            // Calendar header
+            const monthNames = ['January', 'February', 'March', 'April', 'May', 'June',
+                'July', 'August', 'September', 'October', 'November', 'December'];
+            
+            let calendarHTML = `
+                <div class="calendar-header">
+                    <button class="calendar-nav" onclick="changeMonth('${containerId}', -1)">
+                        <i class="fas fa-chevron-left"></i>
+                    </button>
+                    <div>${monthNames[currentMonth]} ${currentYear}</div>
+                    <button class="calendar-nav" onclick="changeMonth('${containerId}', 1)">
+                        <i class="fas fa-chevron-right"></i>
+                    </button>
+                </div>
+                <div class="calendar-grid">
+                    <div class="calendar-day-header">Sun</div>
+                    <div class="calendar-day-header">Mon</div>
+                    <div class="calendar-day-header">Tue</div>
+                    <div class="calendar-day-header">Wed</div>
+                    <div class="calendar-day-header">Thu</div>
+                    <div class="calendar-day-header">Fri</div>
+                    <div class="calendar-day-header">Sat</div>
+            `;
+            
+            // Add empty cells for days before the first day of the month
+            for (let i = 0; i < startingDay; i++) {
+                calendarHTML += `<div class="calendar-day other-month"></div>`;
+            }
+            
+            // Add days of the month
+            for (let day = 1; day <= daysInMonth; day++) {
+                const date = new Date(currentYear, currentMonth, day);
+                const isToday = isSameDay(date, today);
+                const isSelected = isSameDay(date, selectedDate);
+                
+                let dayClass = 'calendar-day';
+                if (isToday) dayClass += ' today';
+                if (isSelected) dayClass += ' selected';
+                
+                calendarHTML += `
+                    <div class="${dayClass}" data-date="${formatDateForStorage(date)}" 
+                         onclick="selectDate('${containerId}', '${formatDateForStorage(date)}')">
+                        ${day}
+                    </div>
+                `;
+            }
+            
+            calendarHTML += `</div>`;
+            container.innerHTML = calendarHTML;
+        }
+
+        // Change month in calendar
+        function changeMonth(containerId, direction) {
+            const container = document.getElementById(containerId);
+            const currentText = container.querySelector('.calendar-header div').textContent;
+            const [month, year] = currentText.split(' ');
+            const monthIndex = [
+                'January', 'February', 'March', 'April', 'May', 'June',
+                'July', 'August', 'September', 'October', 'November', 'December'
+            ].indexOf(month);
+            
+            let newMonth = monthIndex + direction;
+            let newYear = parseInt(year);
+            
+            if (newMonth < 0) {
+                newMonth = 11;
+                newYear--;
+            } else if (newMonth > 11) {
+                newMonth = 0;
+                newYear++;
+            }
+            
+            const newDate = new Date(newYear, newMonth, 1);
+            initCalendar(containerId, newDate);
+        }
+
+        // Select date in calendar
+        function selectDate(containerId, dateString) {
+            const container = document.getElementById(containerId);
+            const selectedDate = new Date(dateString);
+            
+            // Update all calendars with the same container ID
+            initCalendar(containerId, selectedDate);
+            
+            // Store selected date for site creation/editing
+            if (containerId === 'siteCalendar') {
+                window.siteStartDate = selectedDate;
+            } else if (containerId === 'editSiteCalendar') {
+                window.editSiteStartDate = selectedDate;
+            }
+        }
+
+        // Add a new site
+        function addSite() {
+            const name = document.getElementById('siteName').value.trim();
+            const code = document.getElementById('siteCode').value.trim().toUpperCase();
+
+            if (!name) {
+                showToast('Please enter a name for the site', 'error');
+                return;
+            }
+
+            if (!code) {
+                showToast('Please enter a code for the site', 'error');
+                return;
+            }
+
+            // Check if site already exists
+            if (sites.find(s => s.name === name)) {
+                showToast('A site with this name already exists', 'error');
+                return;
+            }
+
+            const newSite = {
+                id: name.toLowerCase().replace(/\s+/g, '-'),
+                name,
+                code,
+                startDate: (window.siteStartDate || new Date()).toISOString()
+            };
+
+            sites.push(newSite);
+            saveSites();
+            updateSiteSelectors();
+            closeModal('addSiteModal');
+
+            // Reset form
+            document.getElementById('siteName').value = '';
+            document.getElementById('siteCode').value = '';
+            delete window.siteStartDate;
+
+            showToast(`Site ${name} added successfully`, 'success');
+        }
+
+        // Edit site
+        function editSite(siteId) {
+            const site = sites.find(s => s.id === siteId);
+            if (!site) return;
+
+            currentEditingSiteId = siteId;
+
+            // Populate the edit form with current site data
+            document.getElementById('editSiteName').value = site.name;
+            document.getElementById('editSiteCode').value = site.code;
+            
+            // Initialize calendar with site's start date
+            const startDate = site.startDate ? new Date(site.startDate) : new Date();
+            initCalendar('editSiteCalendar', startDate);
+            window.editSiteStartDate = startDate;
+
+            // Show the edit modal
+            document.getElementById('editSiteModal').style.display = 'flex';
+        }
+
+        // Save site changes
+        function saveSiteChanges() {
+            const site = sites.find(s => s.id === currentEditingSiteId);
+            if (!site) return;
+
+            const name = document.getElementById('editSiteName').value.trim();
+            const code = document.getElementById('editSiteCode').value.trim().toUpperCase();
+
+            if (!name) {
+                showToast('Please enter a name for the site', 'error');
+                return;
+            }
+
+            if (!code) {
+                showToast('Please enter a code for the site', 'error');
+                return;
+            }
+
+            // Update site data
+            site.name = name;
+            site.code = code;
+            site.startDate = (window.editSiteStartDate || new Date()).toISOString();
+
+            saveSites();
+            updateSiteSelectors();
+            renderSiteManagement();
+            closeModal('editSiteModal');
+
+            delete window.editSiteStartDate;
+            showToast(`Site ${name} updated successfully`, 'success');
+        }
+
+        // Show duplicate modal
+        function showDuplicateModal(workerId) {
+            const worker = workers.find(w => w.id === workerId);
+            if (!worker) return;
+
+            // Store the worker ID for duplication
+            window.duplicateWorkerId = workerId;
+            
+            // Populate site selector in duplicate modal
+            const siteSelector = document.getElementById('duplicateSite');
+            siteSelector.innerHTML = '';
+            
+            sites.forEach(site => {
+                // Don't include the current site
+                if (site.name !== worker.site) {
+                    const option = document.createElement('option');
+                    option.value = site.name;
+                    option.textContent = site.name;
+                    siteSelector.appendChild(option);
+                }
+            });
+            
+            // Show worker info in modal
+            document.getElementById('duplicateWorkerInfo').textContent = 
+                `Duplicate ${worker.name} (${worker.site}) to another site?`;
+            
+            document.getElementById('duplicateModal').style.display = 'flex';
+        }
+
+        // Duplicate worker to selected site
+        function duplicateWorker() {
+            const workerId = window.duplicateWorkerId;
+            const newSite = document.getElementById('duplicateSite').value;
+            
+            if (!workerId || !newSite) {
+                showToast('Please select a site to duplicate to', 'error');
+                return;
+            }
+
+            const originalWorker = workers.find(w => w.id === workerId);
+            if (!originalWorker) return;
+
+            // Get base name without site suffix
+            const baseName = originalWorker.name.split(' (')[0];
+            
+            // Create unique ID for the duplicate
+            const baseId = baseName.toLowerCase().replace(/\s+/g, '-');
+            const siteSuffix = newSite.toLowerCase().replace(/\s+/g, '-');
+            const newId = `${baseId}-${siteSuffix}`;
+
+            // Check if duplicate already exists
+            if (workers.find(w => w.id === newId)) {
+                showToast('This worker already exists at the selected site', 'error');
+                return;
+            }
+
+            // Create display name
+            const displayName = `${baseName} (${newSite})`;
+
+            // Create duplicate with all original data except attendance
+            const duplicateWorker = {
+                id: newId,
+                name: displayName,
+                role: originalWorker.role,
+                rate: originalWorker.rate,
+                bank: originalWorker.bank,
+                account: originalWorker.account,
+                phone: originalWorker.phone,
+                loans: originalWorker.loans || 0,
+                income: originalWorker.income || 0,
+                site: newSite,
+                attendance: {} // Fresh attendance record
+            };
+
+            workers.push(duplicateWorker);
+            saveWorkers();
+            renderWorkers();
+            updateStats();
+            closeModal('duplicateModal');
+
+            showToast(`Worker duplicated to ${newSite} successfully`, 'success');
+        }
+
+        // Delete a worker
+        function deleteWorker(workerId) {
+            const worker = workers.find(w => w.id === workerId);
+            if (!worker) return;
+
+            if (confirm(`Are you sure you want to delete ${worker.name}?`)) {
+                workers = workers.filter(w => w.id !== workerId);
+                saveWorkers();
+                renderWorkers();
+                updateStats();
+                showToast(`Worker ${worker.name} deleted`, 'success');
+            }
+        }
+
+        // Delete a site
+        function deleteSite(siteId) {
+            const site = sites.find(s => s.id === siteId);
+            if (!site) return;
+
+            // Check if there are workers assigned to this site
+            const siteWorkers = workers.filter(w => w.site === site.name);
+            
+            if (siteWorkers.length > 0) {
+                showToast(`Cannot delete site. There are ${siteWorkers.length} workers assigned to this site.`, 'error');
+                return;
+            }
+
+            if (confirm(`Are you sure you want to delete ${site.name}?`)) {
+                sites = sites.filter(s => s.id !== siteId);
+                saveSites();
+                updateSiteSelectors();
+                renderSiteManagement();
+                
+                // If we deleted the currently selected site, select the first available site
+                if (selectedSite === site.name) {
+                    if (sites.length > 0) {
+                        selectedSite = sites[0].name;
+                        document.getElementById('siteSelector').value = selectedSite;
+                    } else {
+                        selectedSite = '';
+                    }
+                }
+                
+                showToast(`Site ${site.name} deleted`, 'success');
+            }
+        }
+
+        // Clear all attendance for the current fortnight
+        function clearAllAttendance() {
+            if (!confirm('Are you sure you want to clear all attendance for the current period?')) {
+                return;
+            }
+
+            const fortnight = getSelectedFortnight();
+
+            workers.forEach(worker => {
+                fortnight.days.forEach(day => {
+                    const dateKey = formatDateForStorage(day);
+                    delete worker.attendance[dateKey];
+                });
+            });
+
+            saveWorkers();
+            renderWorkers();
+            updateStats();
+            showToast('All attendance cleared for the current period', 'success');
+        }
+
+        // Clear data for current site
+        function clearSiteData() {
+            if (!selectedSite) {
+                showToast('Please select a site first', 'error');
+                return;
+            }
+
+            if (!confirm(`Are you sure you want to clear all attendance data for ${selectedSite}?`)) {
+                return;
+            }
+
+            // Clear attendance for workers in the selected site
+            workers.forEach(worker => {
+                if (worker.site === selectedSite) {
+                    worker.attendance = {};
+                }
+            });
+
+            saveWorkers();
+            renderWorkers();
+            updateStats();
+            showToast(`All attendance data cleared for ${selectedSite}`, 'success');
+        }
+
+        // Clear all data (workers and sites)
+        function clearAllData() {
+            if (!confirm('Are you sure you want to clear ALL data? This will remove all workers and sites.')) {
+                return;
+            }
+
+            workers = [];
+            
+            // Reset to default site
+            const defaultStart = new Date();
+            defaultStart.setDate(defaultStart.getDate() - (defaultStart.getDay() + 5) % 7); // Adjust to Tuesday
+            
+            sites = [{ 
+                id: 'paarl', 
+                name: 'Paarl', 
+                code: 'PRL',
+                startDate: defaultStart.toISOString()
+            }];
+            selectedSite = 'Paarl';
+
+            saveWorkers();
+            saveSites();
+            updateSiteSelectors();
+            renderWorkers();
+            renderAllUsersTable();
+            renderSiteManagement();
+            updateStats();
+
+            showToast('All data cleared', 'success');
+        }
+
+        // Export backup
+        function exportBackup() {
+            const backupData = {
+                workers: workers,
+                sites: sites,
+                exportDate: new Date().toISOString(),
+                version: '2.0'
+            };
+            
+            const dataStr = JSON.stringify(backupData, null, 2);
+            const dataBlob = new Blob([dataStr], {type: 'application/json'});
+            
+            const url = URL.createObjectURL(dataBlob);
+            const link = document.createElement('a');
+            link.href = url;
+            link.download = `tonny_lays_backup_${new Date().toISOString().split('T')[0]}.json`;
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+            URL.revokeObjectURL(url);
+            
+            showToast('Backup exported successfully', 'success');
+        }
+
+        // Restore backup
+        function restoreBackup() {
+            const fileInput = document.getElementById('backupFile');
+            const file = fileInput.files[0];
+            
+            if (!file) {
+                showToast('Please select a backup file', 'error');
+                return;
+            }
+            
+            const reader = new FileReader();
+            
+            reader.onload = function(e) {
+                try {
+                    const backupData = JSON.parse(e.target.result);
+                    
+                    // Validate backup data
+                    if (!backupData.workers || !backupData.sites) {
+                        showToast('Invalid backup file format', 'error');
+                        return;
+                    }
+                    
+                    if (!confirm('This will replace all current data. Are you sure?')) {
+                        return;
+                    }
+                    
+                    workers = backupData.workers;
+                    sites = backupData.sites;
+                    
+                    if (sites.length > 0) {
+                        selectedSite = sites[0].name;
+                    } else {
+                        selectedSite = '';
+                    }
+                    
+                    saveWorkers();
+                    saveSites();
+                    updateSiteSelectors();
+                    renderWorkers();
+                    renderAllUsersTable();
+                    renderSiteManagement();
+                    updateStats();
+                    closeModal('restoreModal');
+                    
+                    showToast('Backup restored successfully', 'success');
+                } catch (error) {
+                    console.error('Error restoring backup:', error);
+                    showToast('Error restoring backup. File may be corrupted.', 'error');
+                }
+            };
+            
+            reader.readAsText(file);
+        }
+
+        // Render all users table
+        function renderAllUsersTable() {
+            const tableBody = document.getElementById('usersTableBody');
+            const emptyState = document.getElementById('usersEmptyState');
+            
+            tableBody.innerHTML = '';
+
+            // Show empty state if no workers
+            if (workers.length === 0) {
+                emptyState.style.display = 'block';
+                return;
+            } else {
+                emptyState.style.display = 'none';
+            }
+
+            // Sort workers by role
+            const sortedWorkers = sortWorkersByRole([...workers]);
+
+            sortedWorkers.forEach(worker => {
+                const daysWorked = calculateDaysWorked(worker);
+                const totalPay = daysWorked * worker.rate;
+
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                    <td>${worker.name}</td>
+                    <td>${worker.role}</td>
+                    <td>R ${worker.rate}</td>
+                    <td>${worker.site}</td>
+                    <td>${worker.bank || 'Not specified'}</td>
+                    <td>${worker.account || 'Not specified'}</td>
+                    <td>${daysWorked}</td>
+                    <td>R ${totalPay}</td>
+                    <td>
+                        <button class="action-btn" onclick="editWorker('${worker.id}')">
+                            <i class="fas fa-edit"></i>
+                        </button>
+                        <button class="action-btn duplicate" onclick="showDuplicateModal('${worker.id}')">
+                            <i class="fas fa-copy"></i>
+                        </button>
+                        <button class="action-btn delete" onclick="deleteWorker('${worker.id}')">
+                            <i class="fas fa-trash"></i>
+                        </button>
+                    </td>
+                `;
+                tableBody.appendChild(row);
+            });
+        }
+
+        // Render site management
+        function renderSiteManagement() {
+            const siteManagementGrid = document.getElementById('siteManagementGrid');
+            siteManagementGrid.innerHTML = '';
+
+            // Add "Add Site" card
+            const addSiteCard = document.createElement('div');
+            addSiteCard.className = 'site-card';
+            addSiteCard.style.cursor = 'pointer';
+            addSiteCard.style.display = 'flex';
+            addSiteCard.style.flexDirection = 'column';
+            addSiteCard.style.alignItems = 'center';
+            addSiteCard.style.justifyContent = 'center';
+            addSiteCard.style.minHeight = '120px';
+            addSiteCard.innerHTML = `
+                <div style="font-size: 2rem; margin-bottom: 0.5rem; color: var(--accent);">
+                    <i class="fas fa-plus"></i>
+                </div>
+                <div style="font-weight: 600;">Add New Site</div>
+            `;
+            addSiteCard.addEventListener('click', showAddSiteModal);
+            siteManagementGrid.appendChild(addSiteCard);
+
+            // Add site cards
+            sites.forEach(site => {
+                const siteCard = document.createElement('div');
+                siteCard.className = 'site-card';
+                
+                const workersCount = workers.filter(w => w.site === site.name).length;
+                const startDate = site.startDate ? new Date(site.startDate) : new Date();
+                
+                siteCard.innerHTML = `
+                    <div class="site-name">
+                        <i class="fas fa-map-marker-alt site-icon"></i>
+                        <span>${site.name}</span>
+                    </div>
+                    <div class="site-details">
+                        <div>Code: ${site.code}</div>
+                        <div>Workers: ${workersCount}</div>
+                        <div>Start Date: ${formatDate(startDate)}</div>
+                    </div>
+                    <div class="site-actions">
+                        <button class="action-btn" onclick="editSite('${site.id}')">
+                            <i class="fas fa-edit"></i>
+                        </button>
+                        <button class="action-btn delete" onclick="deleteSite('${site.id}')">
+                            <i class="fas fa-trash"></i>
+                        </button>
+                    </div>
+                `;
+                siteManagementGrid.appendChild(siteCard);
+            });
+        }
+
+        // Render reports
+        function renderReports() {
+            const siteWorkers = workers.filter(worker => selectedSite === '' || worker.site === selectedSite);
+            const totalWorkers = siteWorkers.length;
+
+            // Calculate payroll by role
+            const rolePayroll = {};
+            let totalPayroll = 0;
+
+            siteWorkers.forEach(worker => {
+                const daysWorked = calculateDaysWorked(worker);
+                const workerPay = daysWorked * worker.rate;
+                
+                if (!rolePayroll[worker.role]) {
+                    rolePayroll[worker.role] = {
+                        workers: 0,
+                        totalDays: 0,
+                        totalPay: 0
+                    };
+                }
+                
+                rolePayroll[worker.role].workers++;
+                rolePayroll[worker.role].totalDays += daysWorked;
+                rolePayroll[worker.role].totalPay += workerPay;
+                totalPayroll += workerPay;
+            });
+
+            // Update report stats
+            document.getElementById('reportTotalWorkers').textContent = totalWorkers;
+            document.getElementById('reportTotalPay').textContent = `R ${totalPayroll.toLocaleString()}`;
+            document.getElementById('reportDaysInPeriod').textContent = getSelectedFortnight().days.length;
+
+            // Calculate attendance rate
+            const fortnight = getSelectedFortnight();
+            const totalPossibleDays = totalWorkers * fortnight.days.length;
+            const totalDaysWorked = Object.values(rolePayroll).reduce((sum, role) => sum + role.totalDays, 0);
+            const attendanceRate = totalPossibleDays > 0 ? Math.round((totalDaysWorked / totalPossibleDays) * 100) : 0;
+            document.getElementById('reportAttendanceRate').textContent = `${attendanceRate}%`;
+
+            // Render report table
+            const tableBody = document.getElementById('reportsTableBody');
+            tableBody.innerHTML = '';
+
+            // Add rows for each role that has workers
+            Object.entries(rolePayroll).forEach(([role, data]) => {
+                if (data.workers > 0) {
+                    const row = document.createElement('tr');
+                    row.innerHTML = `
+                        <td>${role}</td>
+                        <td>${data.workers}</td>
+                        <td>${data.totalDays}</td>
+                        <td>R ${data.totalPay.toLocaleString()}</td>
+                    `;
+                    tableBody.appendChild(row);
+                }
+            });
+
+            // Add total row
+            const totalRow = document.createElement('tr');
+            totalRow.style.fontWeight = 'bold';
+            totalRow.style.borderTop = '2px solid var(--dark-border)';
+            totalRow.innerHTML = `
+                <td>Total</td>
+                <td>${totalWorkers}</td>
+                <td>${totalDaysWorked}</td>
+                <td>R ${totalPayroll.toLocaleString()}</td>
+            `;
+            tableBody.appendChild(totalRow);
+        }
+
+        // Export all users as PDF with attendance details
+        function exportAllUsersPDF() {
+            const { jsPDF } = window.jspdf;
+            const doc = new jsPDF('landscape');
+
+            // Add title
+            doc.setFontSize(20);
+            doc.text('Tonny Lays - Construction Attendance List', 20, 20);
+
+            // Add date information
+            const today = new Date();
+            const dateStr = today.toLocaleDateString('en-GB', {
+                weekday: 'long',
+                year: 'numeric',
+                month: 'long',
+                day: 'numeric'
+            });
+            doc.setFontSize(12);
+            doc.text(`Generated: ${dateStr}`, 20, 35);
+            doc.text(`Site: ${selectedSite || 'All Sites'}`, 20, 45);
+
+            // Prepare table data
+            const siteWorkers = workers.filter(worker => selectedSite === '' || worker.site === selectedSite);
+            const fortnight = getSelectedFortnight();
+
+            // Create header
+            const tableColumn = ['Name', 'Role', 'Bank', 'Account No.', ...fortnight.days.map(day => formatDateWithMonth(day))];
+            const tableRows = [];
+
+            // Sort workers by role
+            const sortedWorkers = sortWorkersByRole([...siteWorkers]);
+
+            // Add worker data
+            sortedWorkers.forEach(worker => {
+                const row = [
+                    worker.name,
+                    worker.role,
+                    worker.bank || 'Not specified',
+                    worker.account || 'Not specified',
+                    ...fortnight.days.map(day => {
+                        const dateKey = formatDateForStorage(day);
+                        const status = worker.attendance[dateKey];
+                        return status === 'present' ? 'P' : status === 'absent' ? 'A' : '';
+                    })
+                ];
+                tableRows.push(row);
+            });
+
+            // Generate table
+            doc.autoTable({
+                startY: 55,
+                head: [tableColumn],
+                body: tableRows,
+                theme: 'grid',
+                headStyles: { fillColor: [46, 139, 87] },
+                styles: { fontSize: 8 },
+                margin: { top: 55 },
+                columnStyles: {
+                    0: { cellWidth: 25 },
+                    1: { cellWidth: 20 },
+                    2: { cellWidth: 25 },
+                    3: { cellWidth: 25 },
+                    ...Object.fromEntries(
+                        Array.from({ length: fortnight.days.length }, (_, i) => [i + 4, { cellWidth: 10 }])
+                    )
+                }
+            });
+
+            // Save the PDF
+            const fileName = `Attendance_List_${today.getDate()}_${today.getMonth() + 1}_${today.getFullYear()}.pdf`;
+            doc.save(fileName);
+
+            showToast('All users PDF exported successfully', 'success');
+        }
+
+        // Export bank verification PDF
+        function exportBankVerificationPDF() {
+            const { jsPDF } = window.jspdf;
+            const doc = new jsPDF();
+
+            // Add title
+            doc.setFontSize(20);
+            doc.text('Tonny Lays - Bank Verification', 20, 20);
+
+            // Add date information
+            const today = new Date();
+            const dateStr = today.toLocaleDateString('en-GB', {
+                weekday: 'long',
+                year: 'numeric',
+                month: 'long',
+                day: 'numeric'
+            });
+            doc.setFontSize(12);
+            doc.text(`Generated: ${dateStr}`, 20, 35);
+            doc.text(`Site: ${selectedSite || 'All Sites'}`, 20, 45);
+
+            // Prepare table data
+            const siteWorkers = workers.filter(worker => selectedSite === '' || worker.site === selectedSite);
+            const rolePayroll = {};
+            let totalPayroll = 0;
+
+            // Calculate payroll by role
+            siteWorkers.forEach(worker => {
+                const daysWorked = calculateDaysWorked(worker);
+                const workerPay = daysWorked * worker.rate;
+                const loans = worker.loans || 0;
+                const income = worker.income || 0;
+                const netPay = workerPay + income - loans;
+                
+                if (!rolePayroll[worker.role]) {
+                    rolePayroll[worker.role] = 0;
+                }
+                
+                rolePayroll[worker.role] += netPay;
+                totalPayroll += netPay;
+            });
+
+            // Add role summary
+            let yPosition = 65;
+            doc.setFontSize(14);
+            doc.setTextColor(46, 139, 87);
+            doc.text('Payroll Summary by Role:', 20, yPosition);
+
+            yPosition += 10;
+            doc.setFontSize(12);
+            doc.setTextColor(0, 0, 0);
+
+            // Add role totals
+            Object.entries(rolePayroll).forEach(([role, pay]) => {
+                if (pay > 0) {
+                    doc.text(`${role}: R ${pay.toLocaleString()}`, 30, yPosition);
+                    yPosition += 7;
+                }
+            });
+
+            // Add total payroll
+            yPosition += 5;
+            doc.setFontSize(14);
+            doc.setTextColor(46, 139, 87);
+            doc.text(`Total Payroll: R ${totalPayroll.toLocaleString()}`, 20, yPosition);
+
+            yPosition += 15;
+
+            // Prepare worker data for table
+            const tableColumn = ['Name', 'Role', 'Days', 'Rate', 'Gross Pay', 'Loans', 'Other Income', 'Net Pay', 'Bank', 'Account No.'];
+            const tableRows = [];
+
+            // Sort workers by role
+            const sortedWorkers = sortWorkersByRole([...siteWorkers]);
+
+            // Add worker data
+            sortedWorkers.forEach(worker => {
+                const daysWorked = calculateDaysWorked(worker);
+                const grossPay = daysWorked * worker.rate;
+                const loans = worker.loans || 0;
+                const income = worker.income || 0;
+                const netPay = grossPay + income - loans;
+
+                const row = [
+                    worker.name,
+                    worker.role,
+                    daysWorked.toString(),
+                    `R ${worker.rate}`,
+                    `R ${grossPay}`,
+                    `R ${loans}`,
+                    `R ${income}`,
+                    `R ${netPay}`,
+                    worker.bank || 'Not specified',
+                    worker.account || 'Not specified'
+                ];
+                tableRows.push(row);
+            });
+
+            // Generate table
+            doc.autoTable({
+                startY: yPosition,
+                head: [tableColumn],
+                body: tableRows,
+                theme: 'grid',
+                headStyles: { fillColor: [46, 139, 87] },
+                styles: { fontSize: 8 },
+                margin: { top: yPosition }
+            });
+
+            // Save the PDF
+            const fileName = `Bank_Verification_${today.getDate()}_${today.getMonth() + 1}_${today.getFullYear()}.pdf`;
+            doc.save(fileName);
+
+            showToast('Bank verification PDF exported successfully', 'success');
+        }
+
+        // Export to Excel with bank details AND daily attendance in ONE sheet
+        function exportToExcel() {
+            const siteWorkers = workers.filter(worker => selectedSite === '' || worker.site === selectedSite);
+            const workbook = XLSX.utils.book_new();
+            const fortnight = getSelectedFortnight();
+
+            // Prepare data - combine payroll and daily attendance
+            const data = [];
+
+            // Create header row
+            const header = [
+                'Name', 'Role', 'Rate', 'Site', 'Bank', 'Account No.', 'Phone', 'Loans', 'Other Income',
+                ...fortnight.days.map(day => formatDateForDisplay(day)),
+                'Days Worked', 'Gross Pay', 'Net Pay'
+            ];
+            data.push(header);
+
+            // Sort workers by role
+            const sortedWorkers = sortWorkersByRole([...siteWorkers]);
+
+            // Add worker rows with all data
+            sortedWorkers.forEach(worker => {
+                const daysWorked = calculateDaysWorked(worker);
+                const grossPay = daysWorked * worker.rate;
+                const loans = worker.loans || 0;
+                const income = worker.income || 0;
+                const netPay = grossPay + income - loans;
+
+                const row = [
+                    worker.name,
+                    worker.role,
+                    worker.rate,
+                    worker.site,
+                    worker.bank || 'Not specified',
+                    worker.account || 'Not specified',
+                    worker.phone || 'Not provided',
+                    loans,
+                    income,
+                    ...fortnight.days.map(day => {
+                        const dateKey = formatDateForStorage(day);
+                        const status = worker.attendance[dateKey];
+                        return status === 'present' ? 'P' : status === 'absent' ? 'A' : '';
+                    }),
+                    daysWorked,
+                    grossPay,
+                    netPay
+                ];
+
+                data.push(row);
+            });
+
+            // Create worksheet
+            const worksheet = XLSX.utils.aoa_to_sheet(data);
+
+            // Add worksheet to workbook
+            XLSX.utils.book_append_sheet(workbook, worksheet, 'Payroll & Attendance');
+
+            // Generate Excel file and trigger download
+            XLSX.writeFile(workbook, `TonnyLays_Full_Data_${formatDate(fortnight.start).replace(/\//g, '-')}_${formatDate(fortnight.end).replace(/\//g, '-')}.xlsx`);
+            showToast('Excel file exported successfully with daily attendance!', 'success');
+        }
+
+        // Import Excel data - updated to handle daily attendance columns
+        function importExcelData() {
+            const fileInput = document.getElementById('excelFile');
+            const file = fileInput.files[0];
+
+            if (!file) {
+                showToast('Please select a file to import', 'error');
+                return;
+            }
+
+            const reader = new FileReader();
+
+            reader.onload = function (e) {
+                try {
+                    const data = new Uint8Array(e.target.result);
+                    const workbook = XLSX.read(data, { type: 'array' });
+
+                    // Try to get the detailed attendance sheet first, fall back to first sheet
+                    let worksheet = workbook.Sheets['Payroll & Attendance'] ||
+                        workbook.Sheets['Daily Attendance'] ||
+                        workbook.Sheets[workbook.SheetNames[0]];
+
+                    const jsonData = XLSX.utils.sheet_to_json(worksheet, { header: 1 });
+
+                    if (jsonData.length === 0) {
+                        showToast('No data found in the Excel file', 'error');
+                        return;
+                    }
+
+                    // Get header row to identify column positions
+                    const headers = jsonData[0];
+
+                    // Find the indices for key columns
+                    const nameIndex = headers.indexOf('Name');
+                    const roleIndex = headers.indexOf('Role');
+                    const rateIndex = headers.indexOf('Rate');
+                    const siteIndex = headers.indexOf('Site');
+                    const bankIndex = headers.indexOf('Bank');
+                    const accountIndex = headers.indexOf('Account No.');
+                    const phoneIndex = headers.indexOf('Phone');
+                    const loansIndex = headers.indexOf('Loans');
+                    const incomeIndex = headers.indexOf('Other Income');
+
+                    if (nameIndex === -1) {
+                        showToast('Invalid Excel format: Missing "Name" column', 'error');
+                        return;
+                    }
+
+                    // Process imported data starting from row 1 (skip header)
+                    for (let i = 1; i < jsonData.length; i++) {
+                        const row = jsonData[i];
+                        if (!row[nameIndex]) continue; // Skip empty rows
+
+                        const name = row[nameIndex];
+                        const role = row[roleIndex] || 'Bricklayer';
+                        const rate = row[rateIndex] || 350;
+                        const site = row[siteIndex] || 'Paarl';
+                        const bank = row[bankIndex] || '';
+                        const account = row[accountIndex] || '';
+                        const phone = row[phoneIndex] || '';
+                        const loans = row[loansIndex] || 0;
+                        const income = row[incomeIndex] || 0;
+
+                        // Create unique ID by combining name and site
+                        const baseId = name.toLowerCase().replace(/\s+/g, '-');
+                        const siteSuffix = site.toLowerCase().replace(/\s+/g, '-');
+                        const id = `${baseId}-${siteSuffix}`;
+
+                        // Find existing worker or create new
+                        let worker = workers.find(w => w.id === id);
+                        if (!worker) {
+                            worker = {
+                                id,
+                                name,
+                                role,
+                                rate,
+                                bank,
+                                account,
+                                phone,
+                                loans,
+                                income,
+                                site,
+                                attendance: {}
+                            };
+                            workers.push(worker);
+                        } else {
+                            // Update existing worker data
+                            worker.name = name;
+                            worker.role = role;
+                            worker.rate = rate;
+                            worker.bank = bank;
+                            worker.account = account;
+                            worker.phone = phone;
+                            worker.loans = loans;
+                            worker.income = income;
+                            worker.site = site;
+                        }
+
+                        // Process daily attendance columns
+                        const fortnight = getSelectedFortnight();
+                        fortnight.days.forEach((day, dayIndex) => {
+                            const dayHeader = formatDateForDisplay(day);
+                            const dayColumnIndex = headers.indexOf(dayHeader);
+
+                            if (dayColumnIndex !== -1 && row[dayColumnIndex]) {
+                                const status = row[dayColumnIndex].toString().toUpperCase();
+                                const dateKey = formatDateForStorage(day);
+
+                                if (status === 'P' || status === '1' || status === 'PRESENT') {
+                                    worker.attendance[dateKey] = 'present';
+                                } else if (status === 'A' || status === '0' || status === 'ABSENT') {
+                                    worker.attendance[dateKey] = 'absent';
+                                }
+                            }
+                        });
+                    }
+
+                    saveWorkers();
+                    renderWorkers();
+                    renderAllUsersTable();
+                    updateStats();
+                    closeModal('importModal');
+
+                    showToast('Data imported successfully with attendance!', 'success');
+                } catch (error) {
+                    console.error('Error importing Excel file:', error);
+                    showToast('Error importing file. Please check the format.', 'error');
+                }
+            };
+
+            reader.readAsArrayBuffer(file);
+        }
+
+        // Save data locally
+        function saveData() {
+            saveWorkers();
+            saveSites();
+            showToast('Data saved locally', 'success');
+        }
+
+        // Show toast notification
+        function showToast(message, type = 'success') {
+            const toast = document.getElementById('toast');
+            const toastIcon = toast.querySelector('.toast-icon i');
+            const toastTitle = toast.querySelector('.toast-title');
+            const toastMessage = toast.querySelector('.toast-message');
+
+            // Set icon and title based on type
+            if (type === 'success') {
+                toastIcon.className = 'fas fa-check';
+                toastTitle.textContent = 'Success';
+                toast.style.borderLeftColor = 'var(--success)';
+                toast.querySelector('.toast-icon').style.background = 'var(--success)';
+            } else if (type === 'error') {
+                toastIcon.className = 'fas fa-exclamation-triangle';
+                toastTitle.textContent = 'Error';
+                toast.style.borderLeftColor = 'var(--danger)';
+                toast.querySelector('.toast-icon').style.background = 'var(--danger)';
+            } else {
+                toastIcon.className = 'fas fa-info-circle'
+                toastTitle.textContent = 'Info';
+                toast.style.borderLeftColor = 'var(--accent)';
+                toast.querySelector('.toast-icon').style.background = 'var(--accent)';
+            }
+
+            toastMessage.textContent = message;
+            toast.classList.add('show');
+
+            // Hide toast after 3 seconds
+            setTimeout(() => {
+                toast.classList.remove('show');
+            }, 3000);
+        }
+    </script>
+</body>
+
+</html>
